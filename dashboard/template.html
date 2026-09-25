@@ -1,0 +1,1117 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nepal Floods 2026</title>
+<meta name="description" content="Satellite-based flood, vegetation, terrain and landslide analysis of the 26 August 2026 Rasuwa – Bhote Koshi – Trishuli flash floods.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@87.5,500;87.5,600;87.5,700;100,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/*__LEAFLET_CSS__*/
+</style>
+<style>
+:root {
+  color-scheme: dark;
+  --ground: #0a121e;
+  --panel: #101b2b;
+  --panel-2: #15233a;
+  --line: #1f2e44;
+  --line-2: #2b3d58;
+  --ink: #e4ebf4;
+  --ink-2: #aebccd;
+  --muted: #7d8ea6;
+  --accent: #3cc4f0;
+  --accent-ink: #062030;
+  --ochre: #e39a3b;
+  --violet: #9085e9;
+  --orange: #d95926;
+  --blue: #3987e5;
+  --good: #3fb37f;
+  --warn: #f0b43c;
+  --crit: #e5544b;
+  --display: "Archivo", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --r: 10px;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 14px/1.5 var(--body); }
+button, select, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+h1, h2, h3 { font-family: var(--display); font-stretch: 87.5%; margin: 0; text-wrap: balance; letter-spacing: .005em; }
+.num, td.n, .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+.app { display: grid; grid-template-columns: 232px minmax(0, 1fr); min-height: 100%; }
+
+/* ---------- rail ---------- */
+.rail { position: sticky; top: env(safe-area-inset-top, 0px); height: 100vh; overflow-y: auto; border-right: 1px solid var(--line);
+  background: linear-gradient(180deg, #0c1624, var(--ground)); display: flex; flex-direction: column; gap: 22px; padding: 22px 14px; }
+.brand { display: grid; gap: 4px; padding-inline: 8px; }
+.brand .eyebrow { font: 500 10.5px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.brand h1 { font-size: 26px; line-height: 1.05; font-weight: 700; }
+.brand p { margin: 0; color: var(--muted); font-size: 12.5px; }
+nav { display: grid; gap: 2px; }
+nav button { all: unset; cursor: pointer; display: flex; align-items: center; gap: 11px; padding: 9px 10px; border-radius: 8px; color: var(--ink-2); font-size: 14px; }
+nav button svg { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+nav button:hover { background: var(--panel); color: var(--ink); }
+nav button[aria-current="page"] { background: var(--panel-2); color: var(--ink); box-shadow: inset 2px 0 0 var(--accent); }
+nav button:focus-visible { outline: 2px solid var(--accent); }
+.sources { margin-top: auto; display: grid; gap: 10px; padding: 14px 10px 4px; border-top: 1px solid var(--line); }
+.sources h4 { margin: 0; font: 500 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.src { display: grid; grid-template-columns: 8px 1fr; gap: 2px 10px; font-size: 12.5px; }
+.src i { width: 8px; height: 8px; border-radius: 2px; margin-top: 6px; }
+.src span { color: var(--muted); grid-column: 2; font-size: 11.5px; }
+
+/* ---------- header ---------- */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 1000; background: rgba(10, 18, 30, .94); backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line); }
+.top-inner { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; padding: 14px 28px 12px; position: relative; z-index: 1; }
+/* decorative Himalayan silhouette: bottom of the header only, faded out behind the title */
+.skyline { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 62%; pointer-events: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent 30%, #000 62%); mask-image: linear-gradient(90deg, transparent 0%, transparent 30%, #000 62%); }
+.title-block { display: grid; gap: 2px; margin-right: auto; }
+.title-block h2 { font-size: 22px; font-weight: 600; }
+.title-block p { margin: 0; color: var(--ink-2); font-size: 13px; }
+.selectors { display: flex; flex-wrap: wrap; align-items: end; gap: 10px; }
+.field { display: grid; gap: 3px; }
+.field label { font: 500 10.5px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+select { background: var(--panel); border: 1px solid var(--line-2); border-radius: 8px; padding: 6px 30px 6px 10px; min-width: 0; max-width: 100%;
+  appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position: calc(100% - 15px) 55%, calc(100% - 10px) 55%; background-size: 5px 5px; background-repeat: no-repeat; cursor: pointer; }
+select:hover { border-color: var(--muted); }
+.event-chip { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; border: 1px solid rgba(229, 84, 75, .45); border-radius: 999px;
+  color: #f3b0ab; font: 500 12px/1 var(--mono); background: rgba(229, 84, 75, .08); white-space: nowrap; }
+.event-chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--crit); box-shadow: 0 0 0 3px rgba(229, 84, 75, .25); }
+
+/* ---------- pages ---------- */
+main { min-width: 0; }
+.page { display: grid; gap: 18px; padding: 22px 28px 40px; }
+.page[hidden] { display: none !important; }
+.page-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; }
+.page-head h2 { font-size: 30px; font-weight: 700; }
+.page-head p { margin: 0; color: var(--ink-2); max-width: 72ch; }
+
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+.kpi { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px 13px; display: grid; gap: 4px; align-content: start; }
+.kpi .lbl { font-size: 12.5px; color: var(--ink-2); }
+.kpi .val { font-family: var(--display); font-stretch: 87.5%; font-weight: 600; font-size: 30px; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.kpi .val small { font-size: 15px; font-weight: 500; color: var(--ink-2); margin-left: 3px; }
+.kpi .ctx { font-size: 12px; color: var(--muted); }
+.chip { justify-self: start; display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; padding: 3px 8px 3px 7px; border-radius: 999px;
+  font: 500 11px/1.2 var(--mono); letter-spacing: .01em; border: 1px solid; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.chip.good { color: #7fd6a9; border-color: rgba(63, 179, 127, .45); background: rgba(63, 179, 127, .08); }
+.chip.warn { color: #f5cd7a; border-color: rgba(240, 180, 60, .45); background: rgba(240, 180, 60, .08); }
+.chip.crit { color: #f3a39d; border-color: rgba(229, 84, 75, .5); background: rgba(229, 84, 75, .08); }
+.chip.info { color: #9fdcf5; border-color: rgba(60, 196, 240, .4); background: rgba(60, 196, 240, .07); }
+
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px 16px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.panel-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.panel-head h3 { font-size: 17px; font-weight: 600; margin-right: auto; }
+.panel-head .sub { width: 100%; margin: -6px 0 0; color: var(--muted); font-size: 12.5px; }
+.grid-main { display: grid; grid-template-columns: minmax(0, 1.9fr) minmax(280px, 1fr); gap: 16px; align-items: start; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.stack { display: grid; gap: 16px; align-content: start; min-width: 0; }
+
+.seg { display: inline-flex; background: var(--ground); border: 1px solid var(--line-2); border-radius: 8px; padding: 2px; gap: 2px; }
+.seg button { all: unset; cursor: pointer; padding: 5px 11px; border-radius: 6px; font-size: 12.5px; color: var(--ink-2); }
+.seg button:hover:not(:disabled) { color: var(--ink); background: var(--panel-2); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.seg button:disabled { opacity: .38; cursor: not-allowed; }
+.seg button:focus-visible { outline: 2px solid var(--accent); }
+
+.map-wrap { position: relative; border-radius: 8px; overflow: hidden; border: 1px solid var(--line); }
+.map { height: 520px; background: #070d16; }
+.map.tall { height: 600px; }
+.map.short { height: 420px; }
+.map-note { position: absolute; left: 54px; top: 10px; z-index: 500; max-width: min(360px, 70%); background: rgba(10, 18, 30, .9); border: 1px solid var(--line-2);
+  border-radius: 8px; padding: 7px 10px; font-size: 12px; color: var(--ink-2); }
+.map-note[hidden] { display: none; }
+.legend { position: absolute; right: 10px; top: 10px; z-index: 500; background: rgba(10, 18, 30, .92); border: 1px solid var(--line-2); border-radius: 8px;
+  padding: 9px 11px; display: grid; gap: 6px; font-size: 12px; min-width: 150px; max-width: 60%; }
+.legend h5 { margin: 0; font: 500 10.5px/1.2 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.legend .row { display: flex; align-items: center; gap: 8px; }
+.legend .sw { width: 12px; height: 12px; border-radius: 3px; flex: none; }
+.legend .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+.legend .ramp { height: 9px; border-radius: 3px; }
+.legend .ends { display: flex; justify-content: space-between; color: var(--muted); font: 11px var(--mono); }
+.layers { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: var(--ink-2); }
+.layers label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.layers input { accent-color: var(--accent); margin: 0; }
+.meta-line { display: flex; flex-wrap: wrap; gap: 4px 16px; color: var(--muted); font: 11.5px var(--mono); }
+.meta-line b { color: var(--ink-2); font-weight: 500; }
+
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.pair figure { margin: 0; display: grid; gap: 5px; }
+.pair figcaption { font-size: 11.5px; color: var(--ink-2); display: flex; justify-content: space-between; gap: 6px; }
+.pair figcaption span { color: var(--muted); font-family: var(--mono); }
+.thumb { aspect-ratio: 1 / 1; max-width: 100%; background: #070d16; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; display: grid; place-items: center; }
+.thumb img { width: 100%; height: 100%; object-fit: contain; }
+.ramp-row { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; font: 11px var(--mono); color: var(--muted); }
+.ramp-row .ramp { height: 8px; border-radius: 3px; }
+
+.chart { position: relative; height: 230px; }
+.chart.tall { height: 300px; }
+.chart.short { height: 190px; }
+
+.statlist { display: grid; gap: 0; margin: 0; }
+.statlist > div { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+.statlist > div:last-child { border-bottom: 0; }
+.statlist dt { color: var(--ink-2); }
+.statlist dd { margin: 0; font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; }
+
+.callout { border: 1px solid rgba(240, 180, 60, .35); background: rgba(240, 180, 60, .06); border-radius: 8px; padding: 11px 13px; font-size: 13px; color: var(--ink-2); display: grid; gap: 4px; }
+.callout strong { color: #f5cd7a; font-weight: 600; }
+.callout.info { border-color: rgba(60, 196, 240, .3); background: rgba(60, 196, 240, .05); }
+.callout.info strong { color: #9fdcf5; }
+.callout p { margin: 0; }
+
+.tbl-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { position: sticky; top: 0; z-index: 1; background: var(--panel); text-align: left; font: 500 10.5px/1.2 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding: 8px 10px; border-bottom: 1px solid var(--line-2); white-space: nowrap; }
+td { padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+td.n, th.n { text-align: right; }
+tr:hover td { background: rgba(255, 255, 255, .015); }
+.bar-cell { display: grid; grid-template-columns: 1fr 52px; gap: 8px; align-items: center; }
+.bar-cell i { display: block; height: 8px; border-radius: 0 4px 4px 0; background: var(--blue); }
+.bar-track { background: var(--ground); border-radius: 4px; overflow: hidden; }
+
+.heat { display: grid; grid-template-columns: 44px repeat(12, minmax(0, 1fr)); gap: 2px; font: 11px var(--mono); color: var(--muted); }
+.heat div { display: grid; place-items: center; min-height: 24px; border-radius: 3px; }
+.heat .c { color: var(--ink); cursor: default; }
+.heat .na { border: 1px dashed var(--line-2); }
+.legend .steps { display: flex; height: 9px; border-radius: 3px; overflow: hidden; }
+.legend .steps i { flex: 1; }
+.chart-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12px; color: var(--ink-2); }
+.chart-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.chart-legend i { width: 14px; height: 3px; border-radius: 2px; }
+label:has(input:disabled) { opacity: .45; cursor: not-allowed; }
+
+.slider-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+.slider-row input[type="range"] { flex: 1 1 220px; accent-color: var(--accent); }
+.day-read { font: 500 14px var(--mono); min-width: 140px; }
+.btn { all: unset; cursor: pointer; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line-2); font-size: 12.5px; color: var(--ink); background: var(--panel-2); }
+.btn:hover { border-color: var(--accent); }
+.btn:focus-visible { outline: 2px solid var(--accent); }
+
+.prose { display: grid; gap: 10px; max-width: 76ch; color: var(--ink-2); }
+.prose p, .prose ul, .prose ol { margin: 0; }
+.prose li + li { margin-top: 4px; }
+.prose code, .formula { font-family: var(--mono); font-size: 12.5px; color: var(--ink); background: var(--ground); border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; }
+.formula { display: block; padding: 8px 10px; white-space: pre-wrap; }
+.prose a { color: var(--accent); }
+.foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 20px; padding: 16px 28px 28px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--line); }
+
+/* leaflet skin */
+.leaflet-container { font-family: var(--body); background: #070d16; }
+.leaflet-bar a { background: var(--panel-2); color: var(--ink); border-bottom-color: var(--line-2); }
+.leaflet-bar a:hover { background: var(--line-2); color: var(--ink); }
+.leaflet-bar { border: 1px solid var(--line-2) !important; box-shadow: none !important; }
+.leaflet-tooltip { background: rgba(10, 18, 30, .95); color: var(--ink); border: 1px solid var(--line-2); box-shadow: none; font-size: 12px; }
+.leaflet-tooltip-top:before { border-top-color: var(--line-2); }
+.leaflet-tooltip.place { background: transparent; border: 0; color: #eef3f9; font: 600 11.5px var(--body); text-shadow: 0 0 3px #000, 0 0 6px #000; padding: 0 0 0 4px; }
+.leaflet-tooltip.place:before { display: none; }
+.leaflet-tooltip.fp { background: transparent; border: 0; color: var(--ink); font: 500 11px var(--mono); text-shadow: 0 0 3px #000, 0 0 5px #000; }
+.leaflet-tooltip.fp:before { display: none; }
+.leaflet-control-scale-line { background: rgba(10, 18, 30, .82) !important; color: var(--ink-2) !important; border-color: var(--ink-2) !important; text-shadow: none !important; font: 10.5px var(--mono); }
+
+@media (max-width: 1180px) {
+  .grid-main { grid-template-columns: minmax(0, 1fr); }
+  .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 860px) {
+  .app { grid-template-columns: minmax(0, 1fr); }
+  .rail { position: static; height: auto; flex-direction: column; gap: 12px; padding: 14px 16px; border-right: 0; border-bottom: 1px solid var(--line); }
+  nav { display: flex; overflow-x: auto; gap: 4px; padding-bottom: 4px; }
+  nav button { white-space: nowrap; }
+  .sources { display: none; }
+  .page { padding: 18px 16px 32px; }
+  .top-inner { padding: 12px 16px; }
+  .grid-3, .grid-2 { grid-template-columns: minmax(0, 1fr); }
+  .map, .map.tall { height: 420px; }
+  .foot { padding-inline: 16px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<div class="app">
+  <aside class="rail">
+    <div class="brand">
+      <span class="eyebrow">Case study · 26 Aug 2026</span>
+      <h1>Nepal Floods 2026</h1>
+      <p>Satellite-based flood &amp; disaster impact analysis</p>
+    </div>
+    <nav id="nav" aria-label="Dashboard pages"></nav>
+    <div class="sources" id="sources"></div>
+  </aside>
+
+  <main>
+    <header class="top">
+      <svg class="skyline" id="skyline" preserveAspectRatio="none" aria-hidden="true"></svg>
+      <div class="top-inner">
+        <div class="title-block">
+          <h2>Rasuwa – Bhote Koshi – Trishuli flash floods</h2>
+          <p>Leveraging Earth-observation data to trace water, vegetation, terrain and landslide impacts</p>
+        </div>
+        <div class="selectors">
+          <div class="field"><label for="sel-before">Before</label><select id="sel-before"></select></div>
+          <div class="field"><label for="sel-after">After</label><select id="sel-after"></select></div>
+          <span class="event-chip" title="Event date reported by WHO Nepal">Event · 26 Aug 2026</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ============ OVERVIEW ============ -->
+    <section class="page" id="p-overview" data-title="Dashboard">
+      <div class="kpis" id="kpis-overview"></div>
+      <div class="grid-main">
+        <div class="panel">
+          <div class="panel-head">
+            <h3 id="ov-map-title">Flood extent map (NDWI)</h3>
+            <div class="seg" role="group" aria-label="Map view" data-mode-group="ov">
+              <button type="button" data-mode="before">Before</button>
+              <button type="button" data-mode="after">After</button>
+              <button type="button" data-mode="change">Change</button>
+            </div>
+          </div>
+          <div class="layers" data-layers="ov">
+            <label><input type="checkbox" id="ov-tc" checked> True colour</label>
+            <label><input type="checkbox" id="ov-idx" checked> Water index</label>
+            <label><input type="checkbox" id="ov-cloud"> Cloud mask</label>
+            <label><input type="checkbox" id="ov-slides"> Landslide inventories</label>
+            <label><input type="checkbox" id="ov-fp" checked> Footprints</label>
+          </div>
+          <div class="map-wrap"><div class="map" id="map-ov"></div><div class="map-note" id="ov-note" hidden></div><div class="legend" id="ov-legend"></div></div>
+          <div class="meta-line" id="ov-meta"></div>
+        </div>
+        <div class="stack">
+          <div class="panel">
+            <div class="panel-head"><h3>NDVI · vegetation</h3></div>
+            <div class="pair" id="ov-ndvi"></div>
+            <div class="ramp-row"><span>−0.1 low</span><div class="ramp" style="background:linear-gradient(90deg,#8c2d04,#d8a24a,#f2e6a0,#7bc86c,#0b5d1e)"></div><span>0.8 high</span></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>NDWI · water</h3></div>
+            <div class="pair" id="ov-ndwi"></div>
+            <div class="ramp-row"><span>−0.6 dry</span><div class="ramp" style="background:linear-gradient(90deg,#f7f4ea,#cfe3f2,#6fb1e4,#1f6fd1,#08306b)"></div><span>0.6 water</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="grid-3">
+        <div class="panel">
+          <div class="panel-head"><h3>Water change</h3><p class="sub" id="ov-wc-sub"></p></div>
+          <div class="chart short"><canvas id="c-ov-water" aria-label="Water change bar chart"></canvas></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Cloud-free share of each scene</h3><p class="sub">Pixels usable after cloud, shadow and snow masking</p></div>
+          <div class="chart short"><canvas id="c-ov-clear" aria-label="Clear-sky share bar chart"></canvas></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Landslide reports per day</h3><p class="sub">BIPAD portal, 20 Aug – 13 Sep 2026, all Nepal</p></div>
+          <div class="chart short"><canvas id="c-ov-bipad" aria-label="Daily landslide reports"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ STUDY AREA ============ -->
+    <section class="page" id="p-study" data-title="Study Area" hidden>
+      <div class="page-head"><h2>Study area</h2><p>The event corridor follows the Bhote Koshi from the Tibet border at Rasuwagadhi down the Trishuli to the Chitwan plains.</p></div>
+      <div class="grid-main">
+        <div class="panel">
+          <div class="layers">
+            <label><input type="checkbox" id="st-fp" checked> Data footprints</label>
+            <label><input type="checkbox" id="st-prov" checked> Provinces</label>
+            <label><input type="checkbox" id="st-places" checked> Places</label>
+          </div>
+          <div class="map-wrap"><div class="map tall" id="map-st"></div><div class="legend" id="st-legend"></div></div>
+        </div>
+        <div class="stack">
+          <div class="panel">
+            <div class="panel-head"><h3>Which data cover the corridor?</h3></div>
+            <div class="tbl-wrap"><table id="tbl-coverage"></table></div>
+          </div>
+          <div class="callout" id="st-callout"></div>
+          <div class="panel">
+            <div class="panel-head"><h3>Affected districts</h3><p class="sub">Named in WHO Nepal situation reporting</p></div>
+            <div class="tbl-wrap"><table id="tbl-districts"></table></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SATELLITE DATA ============ -->
+    <section class="page" id="p-sat" data-title="Satellite Data" hidden>
+      <div class="page-head"><h2>Satellite observations</h2><p>Every observation is one record in the registry. Adding a scene to the pipeline adds it to the date selectors and every map on this dashboard.</p></div>
+      <div class="panel">
+        <div class="panel-head"><h3>Observation timeline</h3></div>
+        <div class="tbl-wrap"><svg id="timeline" viewBox="0 0 1000 175" role="img" aria-label="Timeline of satellite observations around the event" style="width:100%;min-width:640px;height:auto;display:block"></svg></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>Observation registry</h3></div>
+        <div class="tbl-wrap"><table id="tbl-registry"></table></div>
+      </div>
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-head"><h3>Sentinel-2 scene classification</h3><p class="sub">Share of the T44RQT tile in each Scene Classification Layer class</p></div>
+          <div class="tbl-wrap"><table id="tbl-scl"></table></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>True-colour previews</h3></div>
+          <div class="pair" id="sat-thumbs" style="grid-template-columns:repeat(3,1fr)"></div>
+          <p class="sub" style="margin:0;color:var(--muted);font-size:12px">Landsat 9 is shown for the Trishuli corridor. Dark areas lie outside each satellite's swath.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FLOOD MAPPING ============ -->
+    <section class="page" id="p-flood" data-title="Flood Mapping" hidden>
+      <div class="page-head"><h2>Flood mapping</h2><p>Water is mapped where NDWI &gt; 0 and near-infrared reflectance &lt; 0.15, on pixels that are cloud-free in the scene's own quality mask.</p></div>
+      <div class="kpis" id="kpis-flood"></div>
+      <div class="grid-main">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Water extent</h3>
+            <div class="seg" role="group" aria-label="Map view" data-mode-group="fl">
+              <button type="button" data-mode="before">Before</button>
+              <button type="button" data-mode="after">After</button>
+              <button type="button" data-mode="change">Change</button>
+            </div>
+          </div>
+          <div class="layers">
+            <label><input type="checkbox" id="fl-tc" checked> True colour</label>
+            <label><input type="checkbox" id="fl-idx" checked> NDWI</label>
+            <label><input type="checkbox" id="fl-water"> Water mask (Landsat)</label>
+            <label><input type="checkbox" id="fl-cloud"> Cloud mask</label>
+          </div>
+          <div class="field" id="fl-extent-field" hidden><label for="fl-extent">Landsat extent</label>
+            <select id="fl-extent"><option value="corridor">Trishuli corridor (60 m preview)</option><option value="scene">Full scene (150 m preview)</option></select></div>
+          <div class="map-wrap"><div class="map tall" id="map-fl"></div><div class="map-note" id="fl-note" hidden></div><div class="legend" id="fl-legend"></div></div>
+          <div class="meta-line" id="fl-meta"></div>
+        </div>
+        <div class="stack">
+          <div class="panel"><div class="panel-head"><h3 id="fl-stats-title">Results</h3></div><dl class="statlist" id="fl-stats"></dl></div>
+          <div class="panel"><div class="panel-head"><h3>Validation</h3><p class="sub">Agreement with each sensor's independent water flag</p></div><dl class="statlist" id="fl-valid"></dl></div>
+          <div class="callout" id="fl-callout"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ VEGETATION ============ -->
+    <section class="page" id="p-veg" data-title="Vegetation Impact" hidden>
+      <div class="page-head"><h2>Vegetation impact</h2><p>NDVI = (NIR − Red) / (NIR + Red). Vegetated pixels have NDVI &gt; 0.3; decline is a drop of more than 0.2 between clear observations.</p></div>
+      <div class="kpis" id="kpis-veg"></div>
+      <div class="grid-main">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>NDVI</h3>
+            <div class="seg" role="group" aria-label="Map view" data-mode-group="vg">
+              <button type="button" data-mode="before">Before</button>
+              <button type="button" data-mode="after">After</button>
+              <button type="button" data-mode="change">Change (ΔNDVI)</button>
+            </div>
+          </div>
+          <div class="layers">
+            <label><input type="checkbox" id="vg-tc"> True colour</label>
+            <label><input type="checkbox" id="vg-idx" checked> NDVI</label>
+            <label><input type="checkbox" id="vg-cloud"> Cloud mask</label>
+          </div>
+          <div class="map-wrap"><div class="map tall" id="map-vg"></div><div class="map-note" id="vg-note" hidden></div><div class="legend" id="vg-legend"></div></div>
+        </div>
+        <div class="stack">
+          <div class="panel">
+            <div class="panel-head"><h3>Land cover on the shared clear area</h3><p class="sub" id="vg-lc-sub"></p></div>
+            <div class="chart"><canvas id="c-vg-lc" aria-label="Land cover before and after"></canvas></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>NDVI distribution · corridor</h3><p class="sub">Landsat 9, 26 Aug 2026, clear pixels only</p></div>
+            <div class="chart short"><canvas id="c-vg-hist" aria-label="NDVI histogram"></canvas></div>
+          </div>
+          <div class="callout" id="vg-callout"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ TERRAIN ============ -->
+    <section class="page" id="p-terrain" data-title="Terrain Analysis" hidden>
+      <div class="page-head"><h2>Terrain analysis</h2><p>Elevation and slope for the corridor at ~67 m, from an interim SRTM-derived DEM. Slope uses ground distance corrected for the map projection.</p></div>
+      <div class="kpis" id="kpis-terrain"></div>
+      <div class="grid-main">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Corridor terrain</h3>
+            <div class="seg" role="group" aria-label="Terrain layer" id="tr-mode">
+              <button type="button" data-t="elevation" aria-pressed="true">Elevation</button>
+              <button type="button" data-t="slope">Slope</button>
+            </div>
+          </div>
+          <div class="layers">
+            <label><input type="checkbox" id="tr-nlid" checked> N-LID landslides 2016–20</label>
+            <label><input type="checkbox" id="tr-koshi" checked> ICIMOD Koshi 2024</label>
+          </div>
+          <div class="map-wrap"><div class="map tall" id="map-tr"></div><div class="legend" id="tr-legend"></div></div>
+        </div>
+        <div class="stack">
+          <div class="panel">
+            <div class="panel-head"><h3>Slope classes · corridor</h3></div>
+            <div class="chart short"><canvas id="c-tr-slope" aria-label="Slope class areas"></canvas></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>Nepal hypsometry</h3><p class="sub">Land area per 500 m elevation band</p></div>
+            <div class="chart short"><canvas id="c-tr-hyp" aria-label="Elevation distribution of Nepal"></canvas></div>
+          </div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-head"><h3>Where Koshi 2024 landslides occur · slope</h3><p class="sub">9,210 mapped landslides, slope attribute from the ICIMOD inventory</p></div>
+          <div class="chart"><canvas id="c-tr-kslope" aria-label="Landslides by slope"></canvas></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Where Koshi 2024 landslides occur · elevation</h3><p class="sub">Count per 500 m band</p></div>
+          <div class="chart"><canvas id="c-tr-kelev" aria-label="Landslides by elevation"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ LANDSLIDES ============ -->
+    <section class="page" id="p-slides" data-title="Landslide Analysis" hidden>
+      <div class="page-head"><h2>Landslide analysis</h2><p>Three sources, kept separate: they cover different years and BIPAD reports carry no coordinates, so they cannot be de-duplicated against the mapped inventories.</p></div>
+      <div class="kpis" id="kpis-slides"></div>
+      <div class="grid-main">
+        <div class="panel">
+          <div class="layers">
+            <label><input type="checkbox" id="ls-nlid" checked> N-LID 2016–2020 (588)</label>
+            <label><input type="checkbox" id="ls-koshi" checked> ICIMOD Koshi 2024 (9,210)</label>
+            <label><input type="checkbox" id="ls-bipad" checked> BIPAD reports by province</label>
+            <label><input type="checkbox" id="ls-corr" checked> Corridor</label>
+          </div>
+          <div class="map-wrap"><div class="map tall" id="map-ls"></div><div class="legend" id="ls-legend"></div></div>
+        </div>
+        <div class="stack">
+          <div class="panel">
+            <div class="panel-head"><h3>BIPAD reports per year</h3><p class="sub" id="ls-year-sub"></p></div>
+            <div class="chart short"><canvas id="c-ls-year" aria-label="Landslide reports per year"></canvas></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>Deaths per year</h3></div>
+            <div class="chart short"><canvas id="c-ls-deaths" aria-label="Landslide deaths per year"></canvas></div>
+          </div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-head"><h3>Monsoon seasonality</h3><p class="sub">BIPAD landslide reports by month</p></div>
+          <div class="heat" id="heat"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Corridor districts since 15 Aug 2026</h3><p class="sub">BIPAD reports in Rasuwa, Nuwakot, Dhading, Gorkha, Chitwan and Tanahun</p></div>
+          <div class="tbl-wrap" style="max-height:340px;overflow-y:auto"><table id="tbl-recent"></table></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ RAINFALL ============ -->
+    <section class="page" id="p-rain" data-title="Rainfall 2025" hidden>
+      <div class="page-head"><h2>Monsoon rainfall context · 2025</h2><p>GPM IMERG Final daily rainfall for 1 July – 31 August 2025. This is last year's monsoon, shown for context. It is not rainfall from the 2026 event.</p></div>
+      <div class="kpis" id="kpis-rain"></div>
+      <div class="grid-main">
+        <div class="panel">
+          <div class="slider-row">
+            <button class="btn" type="button" id="rn-play">Play</button>
+            <input type="range" id="rn-day" min="0" max="61" value="18" aria-label="Day">
+            <span class="day-read" id="rn-read"></span>
+            <div class="seg" role="group" aria-label="Rainfall view"><button type="button" id="rn-daily" aria-pressed="true">Daily</button><button type="button" id="rn-total">Season total</button></div>
+          </div>
+          <div class="map-wrap"><div class="map" id="map-rn"></div><div class="legend" id="rn-legend"></div></div>
+        </div>
+        <div class="stack">
+          <div class="panel">
+            <div class="panel-head"><h3>Season total by province</h3><p class="sub">Area-weighted mean, 1 Jul – 31 Aug 2025</p></div>
+            <div class="chart"><canvas id="c-rn-prov" aria-label="Rainfall by province"></canvas></div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>Daily mean rainfall</h3><div class="chart-legend"><span><i style="background:#d95926"></i>Trishuli corridor</span><span><i style="background:#3987e5"></i>Nepal</span></div><p class="sub">Select a day on the chart to show it on the map</p></div>
+        <div class="chart tall"><canvas id="c-rn-daily" aria-label="Daily mean rainfall"></canvas></div>
+      </div>
+    </section>
+
+    <!-- ============ METHODS ============ -->
+    <section class="page" id="p-methods" data-title="Methods" hidden>
+      <div class="page-head"><h2>Methods, assumptions &amp; limitations</h2><p>Every figure on this dashboard is computed by the Python pipeline in <code class="mono">pipeline/</code> from the raw files. None are typed in by hand.</p></div>
+      <div class="grid-2" id="methods"></div>
+    </section>
+
+    <!-- ============ ABOUT ============ -->
+    <section class="page" id="p-about" data-title="Data Sources" hidden>
+      <div class="page-head"><h2>Data sources</h2><p>Raw datasets, their period and how the dashboard uses each one.</p></div>
+      <div class="panel"><div class="tbl-wrap"><table id="tbl-sources"></table></div></div>
+      <div class="panel prose" id="refs"></div>
+    </section>
+
+    <footer class="foot"><span>Using Earth observation to understand, respond to and build resilience against climate disasters.</span><span id="foot-gen"></span></footer>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>/*__DATA__*/</script>
+<script>
+(() => {
+const D = window.DATA, R = D.registry;
+const OBS = Object.fromEntries(R.observations.map(o => [o.id, o]));
+const $ = s => document.querySelector(s);
+const el = (tag, attrs = {}, html = "") => { const e = document.createElement(tag); Object.assign(e, attrs); if (html) e.innerHTML = html; return e; };
+const f0 = n => Number(n).toLocaleString("en-US", { maximumFractionDigits: 0 });
+const f1 = n => Number(n).toLocaleString("en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const f2 = n => Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const short = s => { const d = new Date(s + "T00:00:00Z"); return `${d.getUTCDate()} ${MON[d.getUTCMonth()]}`; };
+const fmtDate = s => `${short(s)} ${s.slice(0, 4)}`;
+const img = p => D.images[p];
+const C = { ink: "#e4ebf4", ink2: "#aebccd", muted: "#7d8ea6", line: "#1f2e44", panel: "#101b2b", blue: "#3987e5", orange: "#d95926",
+            violet: "#9085e9", accent: "#3cc4f0", ochre: "#e39a3b", crit: "#e5544b", good: "#3fb37f", warn: "#f0b43c" };
+const SEQ = ["#123d73", "#184f95", "#1c5cab", "#2a78d6", "#5598e7", "#86b6ef", "#cde2fb"];  // dark surface: low recedes, high is bright
+const seqText = i => i >= 4 ? "#0a121e" : "#e4ebf4";
+const S2 = D.registry.observations.filter(o => o.platform === "sentinel2");
+const L9 = D.landsat, T = D.terrain, RN = D.rainfall, LS = D.landslides;
+const cmpFor = (a, b) => R.comparisons.find(c => c.before === a && c.after === b);
+
+/* ---------------- navigation ---------------- */
+const ICONS = {
+  overview: '<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  study: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>',
+  sat: '<rect x="9" y="9" width="6" height="6" rx="1"/><path d="M3 5l4 4M17 15l4 4M9 12H3M21 12h-6M12 3v6"/>',
+  flood: '<path d="M3 15c2 0 2-1.5 4.5-1.5S10 15 12 15s2-1.5 4.5-1.5S19 15 21 15M3 19c2 0 2-1.5 4.5-1.5S10 19 12 19s2-1.5 4.5-1.5S19 19 21 19M12 3l4 6a4.5 4.5 0 0 1-8 0z"/>',
+  veg: '<path d="M5 21c0-9 5-15 15-16-1 10-7 15-15 16zM5 21l8-8"/>',
+  terrain: '<path d="M2 20l6-10 4 6 3-4 7 8z"/><path d="M8 10l2 3"/>',
+  slides: '<path d="M3 20h18L8 6z"/><path d="M13 13l2 2M15 10l2 1"/>',
+  rain: '<path d="M7 15a4 4 0 0 1 .5-8A5.5 5.5 0 0 1 18 8a3.5 3.5 0 0 1 0 7z"/><path d="M8 18l-1 3M12 18l-1 3M16 18l-1 3"/>',
+  methods: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h7"/>',
+  about: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>'
+};
+const PAGES = [["overview", "p-overview", "Dashboard"], ["study", "p-study", "Study Area"], ["sat", "p-sat", "Satellite Data"],
+  ["flood", "p-flood", "Flood Mapping"], ["veg", "p-veg", "Vegetation Impact"], ["terrain", "p-terrain", "Terrain Analysis"],
+  ["slides", "p-slides", "Landslide Analysis"], ["rain", "p-rain", "Rainfall 2025"], ["methods", "p-methods", "Methods"], ["about", "p-about", "Data Sources"]];
+const inited = {};
+function show(key) {
+  PAGES.forEach(([k, id]) => { $("#" + id).hidden = k !== key; });
+  document.querySelectorAll("#nav button").forEach(b => { if (b.dataset.k === key) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
+  if (!inited[key]) { inited[key] = true; (INIT[key] || (() => {}))(); }
+  (MAPS[key] || []).forEach(m => setTimeout(() => { m.invalidateSize(); m.fire("nf:shown"); }, 0));
+  try { localStorage.setItem("nf26-page", key); } catch (e) {}
+  try { history.replaceState(null, "", "#" + key); } catch (e) {}
+  window.scrollTo({ top: 0 });
+}
+PAGES.forEach(([k, , label]) => {
+  const b = el("button", { type: "button" }, `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[k]}</svg><span>${label}</span>`);
+  b.dataset.k = k; b.onclick = () => show(k); $("#nav").append(b);
+});
+[["Sentinel-2 L2A", "10 m · T44RQT · 2 dates", C.accent], ["Landsat 9 C2 L2", "30 m · 141/040 · event day", C.blue],
+ ["DEM (interim)", "~67 m · SRTM-derived tiles", "#b0763c"], ["GPM IMERG Final", "0.1° · Jul–Aug 2025", "#6da7ec"],
+ ["Landslide inventories", "N-LID · ICIMOD · BIPAD", C.ochre]].forEach(([t, s, c]) =>
+  $("#sources").append(el("div", { className: "src" }, `<i style="background:${c}"></i>${t}<span>${s}</span>`)));
+$("#sources").prepend(el("h4", {}, "Data sources"));
+$("#foot-gen").textContent = `Pipeline run ${fmtDate(R.generated)} · ${R.observations.length} observations in registry`;
+
+/* ---------------- skyline (real DEM profile) ---------------- */
+(function skyline() {
+  // Highest point inside Nepal per longitude, smoothed into a soft ridge silhouette
+  const raw = T.skyline.map(p => p[1]), n = raw.length, W = 1000, H = 100, K = 4;
+  const sm = raw.map((_, i) => { let t = 0, c = 0; for (let j = Math.max(0, i - K); j <= Math.min(n - 1, i + K); j++) { t += raw[j]; c++; } return t / c; });
+  const lo = Math.min(...sm), hi = Math.max(...sm);
+  const pts = sm.map((e, i) => `${(i / (n - 1) * W).toFixed(1)},${(H - 6 - (e - lo) / (hi - lo) * (H - 14)).toFixed(1)}`).join(" ");
+  const svg = $("#skyline");
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.innerHTML = `<defs><linearGradient id="skg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3cc4f0" stop-opacity=".10"/><stop offset="1" stop-color="#3cc4f0" stop-opacity="0"/></linearGradient></defs>
+    <polygon points="0,${H} ${pts} ${W},${H}" fill="url(#skg)"/>
+    <polyline points="${pts}" fill="none" stroke="#3cc4f0" stroke-opacity=".22" stroke-width="1" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>`;
+})();
+
+/* ---------------- date selectors (registry-driven) ---------------- */
+const sel = { before: "s2-2026-08-25", after: "s2-2026-09-04" };
+try { const s = JSON.parse(localStorage.getItem("nf26-sel")); if (s && OBS[s.before] && OBS[s.after]) Object.assign(sel, s); } catch (e) {}
+["before", "after"].forEach(k => {
+  const s = $("#sel-" + k);
+  R.observations.forEach(o => s.append(el("option", { value: o.id, textContent: `${short(o.date)} · ${o.sensor.split(" ")[0]}` })));
+  s.value = sel[k];
+  s.onchange = () => { sel[k] = s.value; try { localStorage.setItem("nf26-sel", JSON.stringify(sel)); } catch (e) {} refreshAll(); };
+});
+const listeners = [];
+const refreshAll = () => listeners.forEach(f => f());
+
+/* ---------------- map helpers ---------------- */
+const MAPS = {};
+// [name, lat, lon, minor]: minor places sit close together and only label when zoomed in
+const PLACES = [["Rasuwagadhi", 28.2753, 85.3783], ["Syaphrubesi", 28.1597, 85.3406, 1], ["Dhunche", 28.1117, 85.2986, 1], ["Betrawati", 27.9667, 85.1833, 1],
+  ["Bidur", 27.9009, 85.1512, 1], ["Kathmandu", 27.7172, 85.324], ["Pokhara", 28.2096, 83.9856], ["Bharatpur", 27.6833, 84.4333],
+  ["Lo Manthang", 29.183, 83.958], ["Jomsom", 28.7804, 83.7233]];
+function baseMap(id, key, bounds) {
+  const m = L.map(id, { attributionControl: false, zoomSnap: 0.25, minZoom: 6.5, maxZoom: 13, preferCanvas: true, worldCopyJump: false, maxBoundsViscosity: 1 });
+  L.imageOverlay(img(T.basemap.layer), T.basemap.bounds, { interactive: false }).addTo(m);
+  m.fitBounds(bounds || [[26.3, 80.0], [30.5, 88.3]]);
+  m.setMaxBounds(T.basemap.bounds);
+  L.control.scale({ imperial: false, position: "bottomleft" }).addTo(m);
+  (MAPS[key] = MAPS[key] || []).push(m);
+  return m;
+}
+const nepalLine = () => L.geoJSON(D.boundaries.nepal, { style: { color: "#e4ebf4", weight: 1.4, opacity: .8, fill: false }, interactive: false });
+const provLines = () => L.geoJSON(D.boundaries.provinces, { style: { color: "#aebccd", weight: .8, opacity: .45, dashArray: "3 4", fill: false }, interactive: false });
+function placesLayer(within) {
+  const g = L.layerGroup(), minor = L.layerGroup(), box = within && L.latLngBounds(within).pad(-0.03);
+  PLACES.filter(([, la, lo]) => !box || box.contains([la, lo])).forEach(([n, la, lo, isMinor]) => L.circleMarker([la, lo], { radius: 3, color: "#0a121e", weight: 1, fillColor: "#fff", fillOpacity: 1, interactive: false })
+    .bindTooltip(n, { permanent: true, direction: "right", className: "place", offset: [4, 0] }).addTo(isMinor ? minor : g));
+  let host = null;
+  const sync = () => { if (!host) return; if (host.getZoom() >= 9) minor.addTo(host); else host.removeLayer(minor); };
+  g.on("add", () => { host = g._map; host.on("zoomend", sync); sync(); });
+  g.on("remove", () => { if (host) { host.off("zoomend", sync); host.removeLayer(minor); } host = null; });
+  return g;
+}
+const corridorRect = () => { const [w, s, e, n] = D.corridor.bbox; return L.rectangle([[s, w], [n, e]], { color: C.accent, weight: 1.6, dashArray: "6 5", fill: false, interactive: false }); };
+function footprints() {
+  const g = L.layerGroup();
+  const s2b = S2[0].extents.tile.bounds;
+  L.rectangle(s2b, { color: C.accent, weight: 1.2, fill: true, fillOpacity: .04, dashArray: "2 4", interactive: false })
+    .bindTooltip("Sentinel-2 T44RQT", { permanent: true, direction: "center", className: "fp" }).addTo(g);
+  const lb = OBS["l9-2026-08-26"].extents.scene.bounds;
+  L.rectangle(lb, { color: C.blue, weight: 1.2, fill: true, fillOpacity: .04, dashArray: "2 4", interactive: false })
+    .bindTooltip("Landsat 9 141/040", { permanent: true, direction: "center", className: "fp", offset: [0, -40] }).addTo(g);
+  return g;
+}
+function slidesLayer(which) {
+  const g = L.layerGroup(), rd = L.canvas({ padding: .3 });
+  if (which.includes("koshi")) LS.koshi.points.forEach(([x, y, e, s, a]) => L.circleMarker([y, x], { renderer: rd, radius: 2.2, stroke: false, fillColor: C.violet, fillOpacity: .75 })
+    .bindTooltip(`ICIMOD Koshi 2024<br>${f0(a)} m² · slope ${s}° · ${f0(e)} m`).addTo(g));
+  if (which.includes("nlid")) LS.nlid.points.forEach(([x, y, yr, a]) => L.circleMarker([y, x], { renderer: rd, radius: 3.4, color: "#0a121e", weight: 1, fillColor: C.orange, fillOpacity: .95 })
+    .bindTooltip(`N-LID landslide · ${yr}<br>${f0(a)} m²`).addTo(g));
+  return g;
+}
+function legend(elId, html) { $(elId).innerHTML = html; }
+const lgRow = (c, t, dot) => `<div class="row"><span class="${dot ? "dot" : "sw"}" style="background:${c}"></span>${t}</div>`;
+const lgSteps = (title, cols, a, b) => `<h5>${title}</h5><div class="steps">${cols.map(c => `<i style="background:${c}"></i>`).join("")}</div><div class="ends"><span>${a}</span><span>${b}</span></div>`;
+const lgRamp = (title, grad, a, b) => `<h5>${title}</h5><div class="ramp" style="background:linear-gradient(90deg,${grad})"></div><div class="ends"><span>${a}</span><span>${b}</span></div>`;
+const NDWI_G = "#f7f4ea,#cfe3f2,#6fb1e4,#1f6fd1,#08306b", NDVI_G = "#8c2d04,#d8a24a,#f2e6a0,#7bc86c,#0b5d1e", DIFF_G = "#b2182b,#f4a582,#f7f7f7,#92c5de,#2166ac";
+
+/* Thematic controller shared by the overview / flood / vegetation maps */
+function thematic(prefix, pageKey, index, opts = {}) {
+  const m = baseMap("map-" + prefix, pageKey);
+  const group = L.layerGroup().addTo(m);
+  nepalLine().addTo(m); provLines().addTo(m);
+  const fp = footprints(), pl = placesLayer(), cr = corridorRect().addTo(m);
+  pl.addTo(m);
+  let slides = null;
+  const st = { mode: "change", pref: "change", lastFit: null, needFit: false };
+  const btns = document.querySelectorAll(`[data-mode-group="${prefix}"] button`);
+  btns.forEach(b => b.onclick = () => { st.pref = b.dataset.mode; draw(); });
+  m.on("nf:shown", () => { if (st.needFit) draw(); });
+  const chk = id => { const e = $(`#${prefix}-${id}`); return e ? e.checked : false; };
+  document.querySelectorAll(`#p-${pageKey === "overview" ? "overview" : pageKey} input[type=checkbox]`).forEach(i => i.addEventListener("change", draw));
+  const extSel = $("#fl-extent");
+  if (prefix === "fl") extSel.onchange = draw;
+  function draw() {
+    group.clearLayers();
+    const comp = cmpFor(sel.before, sel.after);
+    btns.forEach(b => { if (b.dataset.mode === "change") b.disabled = !comp; });
+    st.mode = st.pref === "change" && !comp ? "after" : st.pref;
+    btns.forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === st.mode));
+    const note = $(`#${prefix}-note`);
+    let bounds, lg = "";
+    const extField = $("#fl-extent-field"), waterBox = $("#fl-water");
+    if (prefix === "fl") { extField.hidden = true; waterBox.disabled = true; }
+    if (st.mode === "change") {
+      const after = OBS[comp.after];
+      bounds = comp.bounds;
+      if (chk("tc")) L.imageOverlay(img(after.extents.tile.layers.truecolor), after.extents.tile.bounds, { opacity: .45 }).addTo(group);
+      if (index === "ndwi") {
+        L.imageOverlay(img(comp.layers.water_change), comp.bounds).addTo(group);
+        lg = `<h5>Water change · ${short(OBS[comp.before].date)} → ${short(after.date)}</h5>` + lgRow("#00dcff", "New water") + lgRow("#286edc", "Persistent water") + lgRow("#f5a028", "Water no longer detected");
+      } else {
+        L.imageOverlay(img(comp.layers.dndvi), comp.bounds, { opacity: .95 }).addTo(group);
+        lg = lgRamp("ΔNDVI (after − before)", DIFF_G, "−0.4 loss", "+0.4 gain");
+      }
+      note.hidden = false;
+      note.textContent = "Change is computed only where both scenes are cloud-free (" + f0(comp.common_clear_km2) + " km²). Display aggregated to 100 m; areas counted at 10 m.";
+    } else {
+      const o = OBS[st.mode === "before" ? sel.before : sel.after];
+      const ext = o.platform === "landsat" && prefix === "fl" ? extSel.value : o.default_extent;
+      const E = o.extents[ext];
+      bounds = E.bounds;
+      if (chk("tc")) L.imageOverlay(img(E.layers.truecolor), E.bounds).addTo(group);
+      if (chk("idx")) L.imageOverlay(img(E.layers[index]), E.bounds, { opacity: chk("tc") ? .85 : 1 }).addTo(group);
+      if (chk("water") && E.layers.water) L.imageOverlay(img(E.layers.water), E.bounds).addTo(group);
+      if (chk("cloud")) L.imageOverlay(img(E.layers.mask), E.bounds).addTo(group);
+      lg = `<h5>${short(o.date)} · ${o.sensor.split(" ").slice(0, 2).join(" ")}</h5>` +
+        (chk("idx") ? (index === "ndwi" ? lgRamp("NDWI", NDWI_G, "−0.6", "+0.6") : lgRamp("NDVI", NDVI_G, "−0.1", "0.8")) : "") +
+        (chk("water") && E.layers.water ? lgRow("#00c8ff", "Detected water") : "") +
+        (chk("cloud") ? lgRow("rgba(235,235,245,.85)", "Cloud") + lgRow("#28283c", "Shadow") + lgRow("#a0dcff", "Snow / ice") : "");
+      note.hidden = o.covers_corridor;
+      if (!o.covers_corridor) note.textContent = "This Sentinel-2 tile (T44RQT) lies north-west of the event corridor, over Mustang and southern Tibet.";
+      if (prefix === "fl") { extField.hidden = o.platform !== "landsat"; waterBox.disabled = o.platform !== "landsat"; }
+    }
+    if (chk("fp")) fp.addTo(group);
+    if (chk("slides")) { slides = slides || slidesLayer(["nlid", "koshi"]); slides.addTo(group); lg += lgRow(C.orange, "N-LID 2016–20", true) + lgRow(C.violet, "ICIMOD Koshi 2024", true); }
+    lg += `<div class="row"><span class="sw" style="border:1.5px dashed ${C.accent};background:transparent"></span>Trishuli corridor</div>`;
+    legend(`#${prefix}-legend`, lg);
+    const key = JSON.stringify(bounds) + st.mode;
+    const visible = m.getContainer().offsetWidth > 0;
+    st.needFit = !visible && key !== st.lastFit;
+    if (visible && key !== st.lastFit) {
+      const cb = L.latLngBounds(bounds).extend(L.latLngBounds([[D.corridor.bbox[1], D.corridor.bbox[0]], [D.corridor.bbox[3], D.corridor.bbox[2]]]));
+      m.fitBounds(opts.withCorridor ? cb : bounds, { padding: [10, 10] }); st.lastFit = key;
+    }
+    if (opts.onDraw) opts.onDraw(st);
+  }
+  listeners.push(draw);
+  draw();
+  return { map: m, st, draw };
+}
+
+/* ---------------- charts ---------------- */
+Chart.defaults.color = C.muted;
+Chart.defaults.font.family = '"IBM Plex Sans", "Helvetica Neue", Arial, sans-serif';
+Chart.defaults.font.size = 11.5;
+Chart.defaults.borderColor = C.line;
+Chart.defaults.plugins.legend.labels.boxWidth = 10;
+Chart.defaults.plugins.legend.labels.boxHeight = 10;
+Chart.defaults.plugins.legend.labels.color = C.ink2;
+Object.assign(Chart.defaults.plugins.tooltip, { backgroundColor: "rgba(10,18,30,.96)", borderColor: "#2b3d58", borderWidth: 1, titleColor: C.ink, bodyColor: C.ink2,
+  padding: 9, cornerRadius: 6, titleFont: { family: '"IBM Plex Mono", monospace', size: 11.5, weight: "500" }, bodyFont: { family: '"IBM Plex Mono", monospace', size: 11.5 } });
+const barDefaults = { borderRadius: { topLeft: 4, topRight: 4 }, borderSkipped: "start", maxBarThickness: 34, borderWidth: 0 };
+const axis = (title, extra = {}) => ({ grid: { color: C.line, drawTicks: false }, border: { display: false }, ticks: { padding: 6, color: C.muted }, title: title ? { display: true, text: title, color: C.muted, font: { size: 11 } } : undefined, ...extra });
+const noGrid = (extra = {}) => ({ grid: { display: false }, border: { color: C.line }, ticks: { color: C.ink2 }, ...extra });
+function chart(id, cfg) { return new Chart($(id), { ...cfg, options: { responsive: true, maintainAspectRatio: false, animation: { duration: 350 }, ...cfg.options } }); }
+
+/* ---------------- KPI tiles ---------------- */
+function kpis(target, items) {
+  $(target).innerHTML = items.map(k => `<div class="kpi"><div class="lbl">${k.l}</div><div class="val">${k.v}${k.u ? `<small>${k.u}</small>` : ""}</div>
+    ${k.c ? `<div class="ctx">${k.c}</div>` : ""}${k.chip ? `<span class="chip ${k.chip[0]}">${k.chip[1]}</span>` : ""}</div>`).join("");
+}
+
+/* ======================= PAGES ======================= */
+const INIT = {};
+const comp0 = R.comparisons[0];
+const l9 = OBS["l9-2026-08-26"];
+const koshiCorr = LS.koshi.in_corridor, nlidCorr = LS.nlid.in_corridor;
+const steep = T.corridor.slope_classes.slice(2).reduce((a, c) => a + c.pct, 0);
+
+INIT.overview = () => {
+  function ovKpis() {
+    const c = cmpFor(sel.before, sel.after) || comp0;
+    kpis("#kpis-overview", [
+      { l: `New water · ${short(OBS[c.before].date)} → ${short(OBS[c.after].date)}`, v: f1(c.new_water_km2), u: "km²", c: `Sentinel-2, on ${f0(c.common_clear_km2)} km² clear on both dates`, chip: ["warn", "Low confidence"] },
+      { l: "Clear sky over corridor, event day", v: f1(L9.corridor.stats.clear_pct), u: "%", c: `Landsat 9, 26 Aug · ${f0(L9.corridor.stats.clear_km2)} km² usable`, chip: ["crit", "Cloud-limited"] },
+      { l: "Landslide reports, 20 Aug – 13 Sep", v: f0(LS.bipad.event_window.incidents), c: `BIPAD, all Nepal · ${LS.bipad.event_window.deaths} deaths reported`, chip: ["info", "BIPAD reports"] },
+      { l: "Mapped landslides in corridor", v: f0(nlidCorr + koshiCorr), c: `${nlidCorr} N-LID (2016–20) · ${koshiCorr} ICIMOD (2024)`, chip: ["info", "Inventories"] },
+      { l: "Corridor slopes steeper than 30°", v: f0(steep), u: "%", c: `Mean slope ${f1(T.corridor.mean_slope)}° · ${f0(T.corridor.min_m)}–${f0(T.corridor.max_m)} m`, chip: ["warn", "Interim DEM"] },
+      { l: "Analysis window", v: String(Math.round((Date.parse(R.observations.at(-1).date) - Date.parse(R.observations[0].date)) / 864e5)), u: "days", c: `${short(R.observations[0].date)} – ${fmtDate(R.observations.at(-1).date)} · ${R.observations.length} scenes`, chip: ["good", "All values computed"] },
+    ]);
+  }
+  listeners.push(ovKpis); ovKpis();
+  thematic("ov", "overview", "ndwi", { withCorridor: true });
+  function pairs() {
+    const a = OBS[sel.before], b = OBS[sel.after];
+    ["ndvi", "ndwi"].forEach(ix => {
+      $("#ov-" + ix).innerHTML = [["Before", a], ["After", b]].map(([t, o]) => {
+        const E = o.extents[o.default_extent];
+        return `<figure><div class="thumb"><img alt="${ix.toUpperCase()} ${t.toLowerCase()} · ${o.date}" src="${img(E.layers[ix])}"></div><figcaption>${t}<span>${short(o.date)} · ${o.platform === "landsat" ? "L9 corridor" : "S2"}</span></figcaption></figure>`;
+      }).join("");
+    });
+  }
+  listeners.push(pairs); pairs();
+  const wc = chart("#c-ov-water", { type: "bar", data: { labels: [], datasets: [{ data: [], backgroundColor: ["#00b8e0", C.blue, C.ochre], ...barDefaults }] },
+    options: { plugins: { legend: { display: false }, tooltip: { callbacks: { title: i => i[0].label[0], label: c => `${f2(c.raw)} km²` } } }, scales: { x: noGrid({ ticks: { color: C.ink2, maxRotation: 0 } }), y: axis("km²", { beginAtZero: true }) } } });
+  const upd = () => { const c = cmpFor(sel.before, sel.after) || comp0; const v = [c.new_water_km2, c.persistent_water_km2, c.lost_water_km2]; wc.data.datasets[0].data = v;
+    wc.data.labels = [["New water", f2(v[0]) + " km²"], ["Persistent", f2(v[1]) + " km²"], ["Lost", f2(v[2]) + " km²"]]; wc.update();
+    $("#ov-wc-sub").textContent = `Sentinel-2 ${short(OBS[c.before].date)} → ${short(OBS[c.after].date)}, area clear on both dates`; };
+  listeners.push(upd); upd();
+  const rows = [["S2 · 25 Aug (tile)", OBS["s2-2026-08-25"].stats.clear_pct], ["L9 · 26 Aug (scene)", L9.scene.stats.clear_pct],
+                ["L9 · 26 Aug (corridor)", L9.corridor.stats.clear_pct], ["S2 · 4 Sep (tile)", OBS["s2-2026-09-04"].stats.clear_pct]];
+  chart("#c-ov-clear", { type: "bar", data: { labels: rows.map(r => r[0]), datasets: [{ data: rows.map(r => r[1]), backgroundColor: rows.map(r => r[0].includes("corridor") ? C.crit : C.blue), ...barDefaults, borderRadius: { topRight: 4, bottomRight: 4 }, maxBarThickness: 20 }] },
+    options: { indexAxis: "y", plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${f1(c.raw)} % clear` } } }, scales: { x: axis("% of footprint", { min: 0, max: 100 }), y: noGrid() } } });
+  const ev = LS.bipad.event_window, days = [];
+  for (let d = new Date(ev.start + "T00:00:00Z"); d <= new Date(ev.end + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + 1)) days.push(d.toISOString().slice(0, 10));
+  chart("#c-ov-bipad", { type: "bar", data: { labels: days.map(short), datasets: [{ data: days.map(d => ev.daily[d] || 0), backgroundColor: days.map(d => d === "2026-08-26" ? C.crit : C.ochre), ...barDefaults, maxBarThickness: 14, borderRadius: { topLeft: 3, topRight: 3 } }] },
+    options: { plugins: { legend: { display: false }, tooltip: { callbacks: { title: i => i[0].label + (days[i[0].dataIndex] === "2026-08-26" ? " · event day" : ""), label: c => `${c.raw} reports` } } },
+      scales: { x: noGrid({ ticks: { color: C.muted, maxRotation: 0, autoSkip: true, maxTicksLimit: 6 } }), y: axis("", { beginAtZero: true }) } } });
+};
+
+INIT.study = () => {
+  const m = baseMap("map-st", "study", [[27.2, 82.6], [30.2, 86.9]]);
+  const prov = L.geoJSON(D.boundaries.provinces, { style: { color: "#aebccd", weight: 1, opacity: .6, dashArray: "3 4", fillOpacity: 0 },
+    onEachFeature: (f, l) => l.bindTooltip(f.properties.province + " Province", { sticky: true }) });
+  nepalLine().addTo(m);
+  const fp = footprints(), pl = placesLayer(), cr = corridorRect().bindTooltip("Rasuwa – Trishuli corridor", { sticky: true });
+  const draw = () => { [prov, fp, pl].forEach(l => m.removeLayer(l)); if ($("#st-prov").checked) prov.addTo(m); if ($("#st-fp").checked) fp.addTo(m); if ($("#st-places").checked) pl.addTo(m); cr.addTo(m); };
+  ["#st-fp", "#st-prov", "#st-places"].forEach(s => $(s).onchange = draw); draw();
+  legend("#st-legend", `<h5>Footprints</h5><div class="row"><span class="sw" style="border:1.5px dotted ${C.accent}"></span>Sentinel-2 tile T44RQT</div><div class="row"><span class="sw" style="border:1.5px dotted ${C.blue}"></span>Landsat 9 scene (bounding box)</div><div class="row"><span class="sw" style="border:1.5px dashed ${C.accent};background:transparent"></span>Event corridor</div>`);
+  const yes = t => `<span class="chip good">${t}</span>`, no = t => `<span class="chip crit">${t}</span>`, part = t => `<span class="chip warn">${t}</span>`;
+  $("#tbl-coverage").innerHTML = `<thead><tr><th>Dataset</th><th>Corridor</th></tr></thead><tbody>
+    <tr><td>Sentinel-2 T44RQT · 25 Aug, 4 Sep</td><td>${no("Not covered")}</td></tr>
+    <tr><td>Landsat 9 · 26 Aug</td><td>${part(f0(L9.corridor.stats.clear_pct) + "% clear")}</td></tr>
+    <tr><td>Interim DEM / slope</td><td>${yes("Full")}</td></tr>
+    <tr><td>N-LID 2016–2020</td><td>${yes(nlidCorr + " landslides")}</td></tr>
+    <tr><td>ICIMOD Koshi 2024</td><td>${part(koshiCorr + " · east edge only")}</td></tr>
+    <tr><td>BIPAD reports</td><td>${yes("By district")}</td></tr>
+    <tr><td>GPM IMERG 2025</td><td>${part("2025 context only")}</td></tr></tbody>`;
+  $("#st-callout").innerHTML = `<strong>The Sentinel-2 scenes miss the event corridor</strong><p>Tile T44RQT spans 83.0–84.2° E, 28.8–29.8° N (Mustang, Upper Dolpa and southern Tibet), about 130 km north-west of the Trishuli valley. Sentinel-2 results on this dashboard describe that area, not the flood. The corridor is covered by MGRS tiles <b class="mono">T45RUM</b> (Rasuwagadhi, Syaphrubesi, Dhunche), <b class="mono">T45RUL</b> (Nuwakot, Bidur) and <b class="mono">T45RTL</b> (lower Trishuli, Dhading). Adding those scenes to the registry updates every page.</p>`;
+  const bd = LS.bipad.corridor.by_district;
+  $("#tbl-districts").innerHTML = `<thead><tr><th>District</th><th class="n">BIPAD reports 2020–26</th></tr></thead><tbody>` +
+    D.corridor.districts.map(d => `<tr><td>${d}</td><td class="n">${bd[d] != null ? f0(bd[d]) : '<span style="color:var(--muted)">none recorded</span>'}</td></tr>`).join("") + "</tbody>";
+};
+
+INIT.sat = () => {
+  // timeline: date ticks above the axis, observations below, event line above only
+  const svg = $("#timeline"), t0 = Date.UTC(2026, 7, 20), t1 = Date.UTC(2026, 8, 10), W = 1000, AX = 78, X = t => 40 + (t - t0) / (t1 - t0) * (W - 80);
+  const ts = s => Date.parse(s + "T00:00:00Z");
+  let h = `<line x1="40" x2="${W - 40}" y1="${AX}" y2="${AX}" stroke="#2b3d58" stroke-width="2"/>`;
+  for (let t = t0; t <= t1; t += 86400000) { const d = new Date(t), big = d.getUTCDate() % 5 === 0 || d.getUTCDate() === 1;
+    h += `<line x1="${X(t)}" x2="${X(t)}" y1="${AX - (big ? 6 : 3)}" y2="${AX + (big ? 6 : 3)}" stroke="#2b3d58"/>`;
+    if (big) h += `<text x="${X(t)}" y="${AX - 12}" fill="${C.muted}" font-size="11" font-family="IBM Plex Mono" text-anchor="middle">${short(d.toISOString().slice(0, 10))}</text>`; }
+  const ex = X(ts("2026-08-26"));
+  h += `<line x1="${ex}" x2="${ex}" y1="14" y2="${AX}" stroke="${C.crit}" stroke-dasharray="3 3"/><text x="${ex + 6}" y="22" fill="#f3a39d" font-size="12" font-family="IBM Plex Sans">Flash flood · 26 Aug</text>`;
+  R.observations.forEach((o, i) => { const x = X(ts(o.date)), col = o.platform === "landsat" ? C.blue : C.accent, y = AX + 26 + (i % 2) * 34;
+    h += `<line x1="${x}" x2="${x}" y1="${AX}" y2="${y - 12}" stroke="${col}" stroke-opacity=".5"/><circle cx="${x}" cy="${AX}" r="6.5" fill="${col}" stroke="#0a121e" stroke-width="2"/>
+      <text x="${x}" y="${y}" fill="${C.ink}" font-size="12" font-family="IBM Plex Sans" text-anchor="middle">${o.sensor.split(" ").slice(0, 2).join(" ").replace(" MSI", "")}</text>
+      <text x="${x}" y="${y + 14}" fill="${C.muted}" font-size="11" font-family="IBM Plex Mono" text-anchor="middle">${short(o.date)}</text>`; });
+  svg.innerHTML = h;
+  $("#tbl-registry").innerHTML = `<thead><tr><th>Date</th><th>Sensor</th><th>Tile</th><th>Role</th><th class="n">Pixel</th><th class="n">Clear sky</th><th>Event corridor</th></tr></thead><tbody>` +
+    R.observations.map(o => { const cp = o.platform === "landsat" ? o.stats.scene.clear_pct : o.stats.clear_pct;
+      return `<tr><td class="mono">${o.date}</td><td>${o.sensor}</td><td class="mono">${o.tile}</td><td>${o.role}</td><td class="n">${o.pixel_m} m</td><td class="n">${f1(cp)} %</td>
+      <td>${o.covers_corridor ? `<span class="chip warn">Yes · ${f0(o.stats.corridor.clear_pct)}% clear</span>` : '<span class="chip crit">No</span>'}</td></tr>`; }).join("") + "</tbody>";
+  const groups = [["Clear land", [4, 5, 7], "#1f9e70"], ["Water", [6], C.blue], ["Cloud", [8, 9, 10], "#c3cad6"], ["Cloud / terrain shadow", [2, 3], "#56657a"], ["Snow / ice", [11], C.violet], ["No data (outside swath)", [0, 1], "#2b3d58"]];
+  const pct = (o, codes) => o.stats.scl_classes.filter(c => codes.includes(c.code)).reduce((a, c) => a + c.pct, 0);
+  $("#tbl-scl").innerHTML = `<thead><tr><th>Class</th>${S2.map(o => `<th>${short(o.date)}</th>`).join("")}</tr></thead><tbody>` +
+    groups.map(([n, codes, col]) => `<tr><td><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${col};margin-right:7px"></span>${n}</td>` +
+      S2.map(o => { const p = pct(o, codes); return `<td style="min-width:150px"><div class="bar-cell"><div class="bar-track"><i style="width:${p}%;background:${col}"></i></div><span class="mono" style="text-align:right">${f1(p)}%</span></div></td>`; }).join("") + "</tr>").join("") + "</tbody>";
+  $("#sat-thumbs").innerHTML = R.observations.map(o => { const E = o.extents[o.default_extent];
+    return `<figure><div class="thumb"><img alt="True colour ${o.date}" src="${img(E.layers.truecolor)}"></div><figcaption>${short(o.date)}<span>${o.sensor.split(" ")[0]}</span></figcaption></figure>`; }).join("");
+};
+
+INIT.flood = () => {
+  const stats = () => {
+    const comp = cmpFor(sel.before, sel.after), a = OBS[sel.before], b = OBS[sel.after];
+    const dl = rows => rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("");
+    const one = o => o.platform === "landsat"
+      ? [[`${short(o.date)} water · corridor (NDWI)`, f2(o.stats.corridor.water_ndwi_km2) + " km²"], [`${short(o.date)} water · corridor (MNDWI)`, f2(o.stats.corridor.water_mndwi_km2) + " km²"]]
+      : [[`${short(o.date)} water · tile`, f2(o.stats.water_km2) + " km²"], [`${short(o.date)} water · Nepal part`, f2(o.stats.water_nepal_km2) + " km²"]];
+    let rows;
+    if (comp) rows = [["Clear on both dates", f0(comp.common_clear_km2) + " km²"], ["Water before", f2(comp.water_before_km2) + " km²"], ["Water after", f2(comp.water_after_km2) + " km²"],
+      ["New water", f2(comp.new_water_km2) + " km²"], ["  of which in Nepal", f2(comp.new_water_nepal_km2) + " km²"], ["Persistent water", f2(comp.persistent_water_km2) + " km²"], ["Water no longer detected", f2(comp.lost_water_km2) + " km²"]];
+    else rows = [...one(a), ...one(b), ["Pixel-level change", "Needs same sensor + footprint"]];
+    $("#fl-stats-title").textContent = comp ? `Results · ${short(a.date)} → ${short(b.date)}` : "Results";
+    $("#fl-stats").innerHTML = dl(rows);
+    const v = [];
+    S2.forEach(o => v.push([`S2 ${short(o.date)}: SCL water also NDWI water`, f0(o.stats.ndwi_vs_scl_water_recall) + " %"]));
+    v.push(["L9 26 Aug: QA water also NDWI water (scene)", f0(L9.scene.stats.ndwi_vs_qa_water_recall) + " %"]);
+    v.push(["L9 26 Aug: QA water also NDWI water (corridor)", f0(L9.corridor.stats.ndwi_vs_qa_water_recall) + " %"]);
+    $("#fl-valid").innerHTML = dl(v);
+    kpis("#kpis-flood", comp ? [
+      { l: "New water", v: f2(comp.new_water_km2), u: "km²", c: `${short(a.date)} → ${short(b.date)}, Sentinel-2`, chip: ["warn", "Low confidence"] },
+      { l: "Water after", v: f2(comp.water_after_km2), u: "km²", c: `vs ${f2(comp.water_before_km2)} km² before, same clear area` },
+      { l: "Area clear on both dates", v: f0(comp.common_clear_km2), u: "km²", c: `${f0(comp.common_clear_km2 / OBS[comp.before].stats.footprint_km2 * 100)} % of the tile swath` },
+      { l: "Event-day water · corridor", v: f2(L9.corridor.stats.water_ndwi_km2), u: "km²", c: `Landsat 9, on ${f0(L9.corridor.stats.clear_km2)} km² clear`, chip: ["crit", `${f0(L9.corridor.stats.cloud_pct)} % cloud`] },
+    ] : [
+      { l: "Pixel-level change", v: "n/a", c: "Choose two Sentinel-2 dates to compare the same pixels", chip: ["info", "Different sensors"] },
+      { l: "Event-day water · corridor", v: f2(L9.corridor.stats.water_ndwi_km2), u: "km²", c: `Landsat 9, on ${f0(L9.corridor.stats.clear_km2)} km² clear`, chip: ["crit", `${f0(L9.corridor.stats.cloud_pct)} % cloud`] },
+    ]);
+    $("#fl-callout").innerHTML = `<strong>Read the change figure with care</strong><p>The 25 Aug scene is hazy. Haze lifts near-infrared reflectance, so only ${f0(OBS["s2-2026-08-25"].stats.ndwi_vs_scl_water_recall)} % of the water that Sentinel-2's own classifier flagged on 25 Aug passes the NDWI rule, against ${f0(OBS["s2-2026-09-04"].stats.ndwi_vs_scl_water_recall)} % on 4 Sep. Part of the "new water" is water the hazy scene failed to detect. The river channels in the north of the tile are the clearest real signal.</p>`;
+  };
+  listeners.push(stats); stats();
+  thematic("fl", "flood", "ndwi");
+};
+
+INIT.veg = () => {
+  const c = comp0;
+  kpis("#kpis-veg", [
+    { l: "Vegetation decline (ΔNDVI < −0.2)", v: f2(c.veg_decline_km2), u: "km²", c: `Sentinel-2, of ${f0(c.veg_before_km2)} km² vegetated on 25 Aug`, chip: ["info", "Small"] },
+    { l: "Mean NDVI change", v: (c.mean_dndvi > 0 ? "+" : "") + f2(c.mean_dndvi), c: "Shared clear area, 25 Aug → 4 Sep", chip: ["warn", "Haze affects 25 Aug"] },
+    { l: "Mean NDVI · corridor", v: f2(L9.corridor.stats.mean_ndvi), c: `Landsat 9, 26 Aug · ${f0(L9.corridor.stats.veg_km2)} km² vegetated` },
+    { l: "Mean NDVI · T44RQT", v: f2(OBS["s2-2026-09-04"].stats.mean_ndvi), c: "Sentinel-2, 4 Sep · arid Trans-Himalaya" },
+  ]);
+  $("#vg-lc-sub").textContent = `Sentinel-2, ${f0(c.common_clear_km2)} km² clear on both dates`;
+  chart("#c-vg-lc", { type: "bar", data: { labels: ["Water", "Vegetation", "Other land"],
+    datasets: [{ label: "25 Aug", data: [c.water_before_km2, c.veg_before_km2, c.bare_before_km2], backgroundColor: C.blue, ...barDefaults },
+               { label: "4 Sep", data: [c.water_after_km2, c.veg_after_km2, c.bare_after_km2], backgroundColor: C.orange, ...barDefaults }] },
+    options: { plugins: { legend: { position: "top", align: "end" }, tooltip: { callbacks: { label: x => `${x.dataset.label}: ${f1(x.raw)} km²` } } }, scales: { x: noGrid(), y: axis("km²", { beginAtZero: true }) } } });
+  const hist = L9.corridor.stats.ndvi_hist, edges = hist.map((_, i) => -0.2 + i * 0.05);
+  chart("#c-vg-hist", { type: "bar", data: { labels: edges.map(e => e.toFixed(2)), datasets: [{ data: hist.map(n => n * 0.0009), backgroundColor: edges.map(e => e >= 0.3 ? "#3a9b4f" : "#8a7a4a"), ...barDefaults, maxBarThickness: 16, borderRadius: { topLeft: 2, topRight: 2 } }] },
+    options: { plugins: { legend: { display: false }, tooltip: { callbacks: { title: i => `NDVI ${i[0].label} to ${(+i[0].label + 0.05).toFixed(2)}`, label: x => `${f1(x.raw)} km²` } } },
+      scales: { x: noGrid({ ticks: { color: C.muted, maxTicksLimit: 6, maxRotation: 0 } }), y: axis("km²", { beginAtZero: true }) } } });
+  $("#vg-callout").innerHTML = `<strong>Vegetation "gain" is mostly atmosphere</strong><p>The ${f0(c.veg_gain_km2)} km² that turned from non-vegetated to vegetated between 25 Aug and 4 Sep is too large for ten days of growth in the Trans-Himalaya. It matches the haze difference between the two scenes. Measured vegetation loss is small (${f2(c.veg_decline_km2)} km²).</p>`;
+  thematic("vg", "veg", "ndvi");
+};
+
+INIT.terrain = () => {
+  kpis("#kpis-terrain", [
+    { l: "Corridor elevation range", v: `${f0(T.corridor.min_m)} – ${f0(T.corridor.max_m)}`, u: "m", c: "From the Trishuli at Devghat to the Langtang peaks" },
+    { l: "Mean slope · corridor", v: f1(T.corridor.mean_slope), u: "°", c: `~${f0(T.corridor.pixel_m)} m DEM cells`, chip: ["warn", "Interim DEM"] },
+    { l: "Slopes ≥ 30° · corridor", v: f0(steep), u: "%", c: `${f0(T.corridor.slope_classes.slice(2).reduce((a, c) => a + c.km2, 0))} km² of steep ground` },
+    { l: "Koshi 2024 landslides, median slope", v: f0(LS.koshi.slope_hist.counts.length && medianFromHist(LS.koshi.slope_hist)), u: "°", c: `Mean ${f1(LS.koshi.mean_slope)}° · median elevation ${f0(LS.koshi.median_elev)} m` },
+  ]);
+  const m = baseMap("map-tr", "terrain", T.corridor.bounds);
+  const lay = { elevation: L.imageOverlay(img(T.corridor.layers.elevation), T.corridor.bounds), slope: L.imageOverlay(img(T.corridor.layers.slope), T.corridor.bounds) };
+  lay.elevation.addTo(m); nepalLine().addTo(m); placesLayer(T.corridor.bounds).addTo(m); corridorRect().addTo(m);
+  const nl = slidesLayer(["nlid"]), ko = slidesLayer(["koshi"]);
+  let mode = "elevation";
+  const draw = () => {
+    Object.values(lay).forEach(l => m.removeLayer(l)); lay[mode].addTo(m); lay[mode].bringToBack();
+    [nl, ko].forEach(l => m.removeLayer(l)); if ($("#tr-koshi").checked) ko.addTo(m); if ($("#tr-nlid").checked) nl.addTo(m);
+    legend("#tr-legend", (mode === "elevation" ? lgRamp("Elevation (m)", "#2d6a4f,#74a860,#d9c77a,#b0763c,#8a5a44,#c9c1bc,#ffffff", "0", "7,500+") : lgRamp("Slope (°)", "#fff7bc,#fec44f,#ec7014,#7a0177", "0", "60+")) +
+      ($("#tr-nlid").checked ? lgRow(C.orange, "N-LID 2016–20", true) : "") + ($("#tr-koshi").checked ? lgRow(C.violet, "ICIMOD Koshi 2024", true) : ""));
+  };
+  document.querySelectorAll("#tr-mode button").forEach(b => b.onclick = () => { mode = b.dataset.t; document.querySelectorAll("#tr-mode button").forEach(x => x.setAttribute("aria-pressed", x === b)); draw(); });
+  ["#tr-nlid", "#tr-koshi"].forEach(s => $(s).onchange = draw); draw();
+  const sc = T.corridor.slope_classes, scCol = ["#fec44f", "#f59b3a", "#ec7014", "#9c2a6d"];
+  chart("#c-tr-slope", { type: "bar", data: { labels: sc.map(s => s.label.replace(/ \(.*/, "")), datasets: [{ data: sc.map(s => s.km2), backgroundColor: scCol, ...barDefaults, borderRadius: { topRight: 4, bottomRight: 4 }, maxBarThickness: 22 }] },
+    options: { indexAxis: "y", plugins: { legend: { display: false }, tooltip: { callbacks: { title: i => sc[i[0].dataIndex].label, label: x => `${f0(x.raw)} km² · ${f1(sc[x.dataIndex].pct)} %` } } }, scales: { x: axis("km²", { beginAtZero: true }), y: noGrid() } } });
+  const hy = T.nepal.hist;
+  chart("#c-tr-hyp", { type: "bar", data: { labels: hy.edges.slice(0, -1).map(e => (e / 1000).toFixed(1)), datasets: [{ data: hy.counts.map(n => n * T.nepal.cell_km2), backgroundColor: hy.edges.slice(0, -1).map(e => e < 1000 ? "#74a860" : e < 3000 ? "#b0763c" : e < 5000 ? "#8a5a44" : "#c9c1bc"), ...barDefaults, maxBarThickness: 18, borderRadius: { topLeft: 2, topRight: 2 } }] },
+    options: { plugins: { legend: { display: false }, tooltip: { callbacks: { title: i => `${(+i[0].label * 1000).toLocaleString()}–${(+i[0].label * 1000 + 500).toLocaleString()} m`, label: x => `${f0(x.raw)} km²` } } },
+      scales: { x: noGrid({ title: { display: true, text: "Elevation (km)", color: C.muted, font: { size: 11 } }, ticks: { color: C.muted, maxRotation: 0 } }), y: axis("km²", { beginAtZero: true }) } } });
+  const ks = LS.koshi.slope_hist, ke = LS.koshi.elev_hist;
+  chart("#c-tr-kslope", { type: "bar", data: { labels: ks.edges.slice(0, -1).map((e, i) => `${e}–${ks.edges[i + 1]}°`), datasets: [{ data: ks.counts, backgroundColor: C.violet, ...barDefaults, maxBarThickness: 26 }] },
+    options: { plugins: { legend: { display: false }, tooltip: { callbacks: { label: x => `${f0(x.raw)} landslides` } } }, scales: { x: noGrid({ ticks: { color: C.muted, maxRotation: 0, autoSkip: true } }), y: axis("Landslides", { beginAtZero: true }) } } });
+  chart("#c-tr-kelev", { type: "bar", data: { labels: ke.edges.slice(0, -1).map((e, i) => `${(e / 1000).toFixed(1)}–${(ke.edges[i + 1] / 1000).toFixed(1)} km`), datasets: [{ data: ke.counts, backgroundColor: C.violet, ...barDefaults, maxBarThickness: 26 }] },
+    options: { plugins: { legend: { display: false }, tooltip: { callbacks: { label: x => `${f0(x.raw)} landslides` } } }, scales: { x: noGrid({ ticks: { color: C.muted, maxRotation: 0, autoSkip: true } }), y: axis("Landslides", { beginAtZero: true }) } } });
+};
+function medianFromHist(h) { const tot = h.counts.reduce((a, b) => a + b, 0); let acc = 0; for (let i = 0; i < h.counts.length; i++) { acc += h.counts[i]; if (acc >= tot / 2) { const prev = acc - h.counts[i]; return h.edges[i] + (tot / 2 - prev) / h.counts[i] * (h.edges[i + 1] - h.edges[i]); } } return 0; }
+
+INIT.slides = () => {
+  const B = LS.bipad, y26 = B.yearly.find(y => y.year === 2026);
+  kpis("#kpis-slides", [
+    { l: "BIPAD landslide reports", v: f0(B.count), c: `${fmtDate(B.period[0])} – ${fmtDate(B.period[1])}` },
+    { l: "Reports in 2026 so far", v: f0(y26.incidents), c: `Highest of any year · ${f0(y26.deaths)} deaths`, chip: ["crit", "Record year"] },
+    { l: "Deaths, 2020 – 2026", v: f0(B.totals.deaths), c: `${f0(B.totals.missing)} missing · ${f0(B.totals.injured)} injured` },
+    { l: "Mapped landslides in corridor", v: f0(nlidCorr + koshiCorr), c: `${nlidCorr} N-LID · ${koshiCorr} ICIMOD Koshi`, chip: ["info", "Inventories"] },
+  ]);
+  const m = baseMap("map-ls", "slides");
+  const vals = B.by_province, max = Math.max(...Object.values(vals));
+  const shade = v => SEQ[Math.min(SEQ.length - 1, Math.floor(v / max * (SEQ.length - 0.01)))];
+  const prov = L.geoJSON(D.boundaries.provinces, { style: f => ({ color: "#0a121e", weight: 1, fillColor: shade(vals[f.properties.province] || 0), fillOpacity: .5 }),
+    onEachFeature: (f, l) => l.bindTooltip(`<b>${f.properties.province}</b><br>${f0(vals[f.properties.province] || 0)} BIPAD reports, 2020–26`, { sticky: true }) });
+  nepalLine().addTo(m); m.fitBounds([[26.3, 80.0], [30.5, 88.3]], { padding: [8, 8] });
+  const nl = slidesLayer(["nlid"]), ko = slidesLayer(["koshi"]), cr = corridorRect();
+  const draw = () => { [prov, nl, ko, cr].forEach(l => m.removeLayer(l));
+    if ($("#ls-bipad").checked) prov.addTo(m); if ($("#ls-koshi").checked) ko.addTo(m); if ($("#ls-nlid").checked) nl.addTo(m); if ($("#ls-corr").checked) cr.addTo(m);
+    legend("#ls-legend", ($("#ls-bipad").checked ? lgSteps("BIPAD reports / province", SEQ, "0", f0(max)) : "") +
+      ($("#ls-nlid").checked ? lgRow(C.orange, "N-LID 2016–20", true) : "") + ($("#ls-koshi").checked ? lgRow(C.violet, "ICIMOD Koshi 2024", true) : "")); };
+  ["#ls-nlid", "#ls-koshi", "#ls-bipad", "#ls-corr"].forEach(s => $(s).onchange = draw); draw();
+  $("#ls-year-sub").textContent = `2026 runs to ${short(B.period[1])} only`;
+  const yrs = B.yearly.map(y => String(y.year));
+  chart("#c-ls-year", { type: "bar", data: { labels: yrs, datasets: [{ data: B.yearly.map(y => y.incidents), backgroundColor: yrs.map(y => y === "2026" ? C.ochre : "#8a6a3e"), ...barDefaults }] },
+    options: { plugins: { legend: { display: false }, tooltip: { callbacks: { label: x => `${f0(x.raw)} reports${yrs[x.dataIndex] === "2026" ? " (to 13 Sep)" : ""}` } } }, scales: { x: noGrid(), y: axis("", { beginAtZero: true }) } } });
+  chart("#c-ls-deaths", { type: "bar", data: { labels: yrs, datasets: [{ data: B.yearly.map(y => y.deaths), backgroundColor: C.crit, ...barDefaults }] },
+    options: { plugins: { legend: { display: false }, tooltip: { callbacks: { label: x => `${f0(x.raw)} deaths` } } }, scales: { x: noGrid(), y: axis("", { beginAtZero: true }) } } });
+  const mon = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"], mx = Math.max(...Object.values(B.monthly).flat());
+  let h = "<div></div>" + mon.map(x => `<div>${x}</div>`).join("");
+  const endY = +B.period[1].slice(0, 4), endM = +B.period[1].slice(5, 7);
+  Object.entries(B.monthly).forEach(([y, arr]) => { h += `<div>${y}</div>` + arr.map((v, i) => {
+    if (+y === endY && i + 1 > endM) return `<div class="na" title="${MON[i]} ${y}: not yet recorded"></div>`;
+    const k = v ? Math.min(6, Math.floor(v / mx * 6.99)) : -1, partial = +y === endY && i + 1 === endM ? " (to " + short(B.period[1]) + ")" : "";
+    return `<div class="c" title="${MON[i]} ${y}: ${v} reports${partial}" style="background:${k < 0 ? "transparent" : SEQ[k]};color:${k < 0 ? "var(--muted)" : seqText(k)}">${v || "·"}</div>`; }).join(""); });
+  $("#heat").innerHTML = h;
+  $("#tbl-recent").innerHTML = `<thead><tr><th>Date</th><th>Location</th><th>District</th><th class="n">Deaths</th><th class="n">Missing</th></tr></thead><tbody>` +
+    B.corridor.recent.map(r => `<tr><td class="mono" style="white-space:nowrap">${r.date}</td><td>${r.Title.replace(/^Landslide at /, "")}</td><td>${r.District}</td><td class="n">${r.deaths || "–"}</td><td class="n">${r.missing || "–"}</td></tr>`).join("") + "</tbody>";
+};
+
+INIT.rain = () => {
+  const s = RN.season, G = RN.grid;
+  kpis("#kpis-rain", [
+    { l: "Nepal mean, 1 Jul – 31 Aug 2025", v: f0(s.nepal_mean_total_mm), u: "mm", c: `Wettest cell ${f0(s.nepal_max_total_mm)} mm` },
+    { l: "Corridor mean, same period", v: f0(s.corridor_mean_total_mm), u: "mm", c: `${f0((s.corridor_mean_total_mm / s.nepal_mean_total_mm - 1) * 100)} % above the Nepal mean` },
+    { l: "Wettest day", v: short(s.wettest_day), c: `Nepal mean ${f1(s.wettest_day_mean_mm)} mm` },
+    { l: "Days with a cell over 100 mm", v: f0(s.days_any_cell_over_100mm), u: "of 62", c: "Any 0.1° cell inside Nepal", chip: ["info", "2025 context"] },
+  ]);
+  const m = baseMap("map-rn", "rain");
+  const rd = L.canvas({ padding: .2 });
+  const cells = G.cells.map(([iy, ix], k) => { const lat = G.lat0 - iy * G.step, lon = G.lon0 + ix * G.step;
+    return L.rectangle([[lat - .05, lon - .05], [lat + .05, lon + .05]], { renderer: rd, stroke: false, fillOpacity: .78 }).addTo(m); });
+  nepalLine().addTo(m); provLines().addTo(m); corridorRect().addTo(m);
+  const DAILY_STOPS = [0, 5, 10, 20, 40, 70, 100], TOTAL_STOPS = [0, 300, 450, 600, 750, 900, 1050];
+  const pick = (v, stops) => { let i = 0; while (i < stops.length - 1 && v >= stops[i + 1]) i++; return SEQ[i]; };
+  let total = false, day = +$("#rn-day").value;
+  const lgBins = (stops, unit) => `<h5>${unit}</h5>` + stops.map((s, i) => lgRow(SEQ[i], i < stops.length - 1 ? `${s}–${stops[i + 1]}` : `${s}+`)).join("") + `<div class="row"><span class="sw" style="background:#0a121e;border:1px solid #2b3d58"></span>Dry (&lt; 0.5)</div>`;
+  function paint() {
+    const vals = total ? G.total : G.daily[day], stops = total ? TOTAL_STOPS : DAILY_STOPS;
+    cells.forEach((c, k) => { const v = vals[k]; c.setStyle({ fillColor: v < 0.5 ? "#0a121e" : pick(v, stops), fillOpacity: v < 0.5 ? .5 : .82 });
+      c.unbindTooltip().bindTooltip(`${f1(v)} mm${total ? " (season)" : ""}`, { sticky: true }); });
+    const d = RN.daily[day];
+    $("#rn-read").textContent = total ? "1 Jul – 31 Aug 2025" : `${fmtDate(d.date)} · ${f1(d.nepal_mean_mm)} mm`;
+    $("#rn-day").disabled = total;
+    legend("#rn-legend", lgBins(stops, total ? "Season total (mm)" : "Daily rainfall (mm)"));
+    if (dc) dc.update("none");
+  }
+  $("#rn-day").oninput = e => { day = +e.target.value; paint(); };
+  const setTotal = t => { total = t; $("#rn-daily").setAttribute("aria-pressed", !t); $("#rn-total").setAttribute("aria-pressed", t); paint(); };
+  $("#rn-daily").onclick = () => setTotal(false); $("#rn-total").onclick = () => setTotal(true);
+  let timer = null;
+  $("#rn-play").onclick = () => { if (timer) { clearInterval(timer); timer = null; $("#rn-play").textContent = "Play"; return; }
+    setTotal(false); $("#rn-play").textContent = "Pause";
+    timer = setInterval(() => { day = (day + 1) % RN.daily.length; $("#rn-day").value = day; paint(); }, 450); };
+  const dayLine = { id: "dayLine", afterDatasetsDraw(c) { if (total) return; const x = c.scales.x.getPixelForValue(day), { top, bottom } = c.chartArea, g = c.ctx;
+    g.save(); g.strokeStyle = C.accent; g.setLineDash([4, 4]); g.beginPath(); g.moveTo(x, top); g.lineTo(x, bottom); g.stroke(); g.restore(); } };
+  const labels = RN.daily.map(d => short(d.date));
+  var dc = chart("#c-rn-daily", { type: "line", plugins: [dayLine], data: { labels, datasets: [
+      { label: "Trishuli corridor", data: RN.daily.map(d => d.corridor_mean_mm), borderColor: C.orange, backgroundColor: C.orange, borderWidth: 2, pointRadius: 0, pointHoverRadius: 5, tension: .25 },
+      { label: "Nepal", data: RN.daily.map(d => d.nepal_mean_mm), borderColor: C.blue, backgroundColor: "rgba(57,135,229,.14)", fill: true, borderWidth: 2, pointRadius: 0, pointHoverRadius: 5, tension: .25 } ] },
+    options: { interaction: { mode: "index", intersect: false }, onClick: (e, els, c) => { const i = c.scales.x.getValueForPixel(e.x); if (i >= 0 && i < labels.length) { day = Math.round(i); $("#rn-day").value = day; setTotal(false); } },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: x => `${x.dataset.label}: ${f1(x.raw)} mm` } } },
+      scales: { x: noGrid({ ticks: { color: C.muted, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } }), y: axis("mm / day (area mean)", { beginAtZero: true }) } } });
+  const pv = Object.entries(RN.provinces).sort((a, b) => b[1].total_mm - a[1].total_mm);
+  chart("#c-rn-prov", { type: "bar", data: { labels: pv.map(p => p[0]), datasets: [{ data: pv.map(p => p[1].total_mm), backgroundColor: pv.map(p => p[0] === "Bagmati" ? C.orange : C.blue), ...barDefaults, borderRadius: { topRight: 4, bottomRight: 4 }, maxBarThickness: 20 }] },
+    options: { indexAxis: "y", plugins: { legend: { display: false }, tooltip: { callbacks: { label: x => `${f0(x.raw)} mm · peak day ${f0(pv[x.dataIndex][1].peak_day_mm)} mm${pv[x.dataIndex][0] === "Bagmati" ? " · contains the corridor" : ""}` } } }, scales: { x: axis("mm", { beginAtZero: true }), y: noGrid() } } });
+  paint();
+};
+
+INIT.methods = () => {
+  const th = R.thresholds;
+  const blocks = [
+    ["Processing pipeline", `<ol><li>Read raw scenes and validate CRS, extent and resolution.</li><li>Scale to reflectance: Sentinel-2 <code>(DN ${th ? "− 1000" : ""}) / 10000</code>; Landsat <code>DN × 0.0000275 − 0.2</code>.</li>
+      <li>Mask clouds, cirrus, shadows and snow with the scene's own quality layer (SCL / QA_PIXEL), buffered by ${th.cloud_buffer_m} m.</li><li>Compute NDWI and NDVI per pixel at native resolution.</li>
+      <li>Build before/after change on pixels clear in both scenes.</li><li>Count pixels × pixel area for every km² figure.</li><li>Write GeoTIFFs, JSON statistics and web overlays; register each observation.</li></ol>`],
+    ["Indices and thresholds", `<span class="formula">NDWI = (Green − NIR) / (Green + NIR)       S2: B3, B8 · L9: B3, B5
+NDVI = (NIR − Red) / (NIR + Red)           S2: B8, B4 · L9: B5, B4
+MNDWI = (Green − SWIR1) / (Green + SWIR1)  L9 only, B3, B6</span>
+      <p>Water: NDWI &gt; ${th.ndwi_water} <b>and</b> NIR &lt; ${th.nir_water_max}. The NIR rule removes haze, cloud edges and snow that NDWI alone lets through. Vegetated: NDVI &gt; ${th.ndvi_veg}. Decline: ΔNDVI &lt; ${th.ndvi_decline}.</p>
+      <p>Thresholds are checked against each sensor's independent water flag (Flood Mapping → Validation). They are not treated as universal constants.</p>`],
+    ["Adding a new satellite date", `<p>The dashboard is data-driven. To add a scene:</p><ol><li>Download it into <code>data/raw/sentinel2/</code> or <code>data/raw/landsat9/</code>.</li><li>Add one record to <code>OBSERVATIONS</code> in <code>pipeline/config.py</code> (and a pair to <code>COMPARISONS</code> if it should be compared).</li>
+      <li>Run <code>python pipeline/run_all.py</code>.</li></ol><p>The date selectors, maps, KPI tiles and registry table pick it up with no UI changes.</p>`],
+    ["Known limitations", `<ul><li>Sentinel-2 tile T44RQT does not cover the event corridor. Tiles T45RUM, T45RUL and T45RTL do.</li><li>Landsat 9 on the event day is ${f0(100 - L9.corridor.stats.clear_pct)} % unusable over the corridor (cloud, shadow, buffer).</li>
+      <li>Haze in the 25 Aug scene inflates Sentinel-2 water and vegetation change.</li><li>The DEM is interim (~67 m, SRTM-derived AWS Terrain Tiles). Replace with SRTM 1″ (30 m) when downloaded; slopes will steepen.</li>
+      <li>BIPAD reports carry no coordinates and are shown by district or province only.</li><li>Rainfall is 2025 context, not 2026 event rainfall.</li><li>Sentinel-1 SAR, which sees through cloud, is deferred.</li><li>No machine-learning results are shown. None have been trained or evaluated yet.</li></ul>`],
+  ];
+  $("#methods").innerHTML = blocks.map(([t, b]) => `<div class="panel prose"><h3 style="color:var(--ink)">${t}</h3>${b}</div>`).join("");
+};
+
+INIT.about = () => {
+  const rows = [
+    ["Sentinel-2C MSI L2A · T44RQT", "25 Aug & 4 Sep 2026", "10 m", "NDWI, NDVI, water & vegetation change, SCL cloud masking", "Copernicus Data Space"],
+    ["Landsat 9 OLI-2 C2 L2 · 141/040", "26 Aug 2026", "30 m", "Event-day NDWI, MNDWI, NDVI, true colour, QA masking", "USGS EarthExplorer"],
+    ["AWS Terrain Tiles (Terrarium)", "Static", "~67 m / ~540 m", "Interim elevation, slope, relief basemap", "AWS Open Data (SRTM/GMTED-derived)"],
+    ["GPM IMERG Final V07B, daily", "1 Jul – 31 Aug 2025", "0.1°", "Rainfall context", "NASA GES DISC"],
+    ["N-LID landslide inventory", "2016 – 2020 (filtered)", "Polygons", `${f0(LS.nlid.count)} landslides, ${f1(LS.nlid.total_area_km2)} km²`, "Nepal Landslide Inventory Database"],
+    ["ICIMOD Koshi Basin inventory", "2024", "Polygons", `${f0(LS.koshi.count)} landslides with elevation, slope, aspect`, "ICIMOD"],
+    ["BIPAD incident reports", `${LS.bipad.period[0]} – ${LS.bipad.period[1]}`, "Tabular", `${f0(LS.bipad.count)} verified landslide reports`, "BIPAD Portal, Government of Nepal"],
+    ["geoBoundaries Nepal ADM0 / ADM1", "2023 build", "Vector", "Country outline and provinces", "geoBoundaries (gbOpen, gbHumanitarian)"],
+  ];
+  $("#tbl-sources").innerHTML = `<thead><tr><th>Dataset</th><th>Period</th><th>Resolution</th><th>Used for</th><th>Source</th></tr></thead><tbody>` +
+    rows.map(r => `<tr>${r.map((c, i) => `<td${i === 1 || i === 2 ? ' class="mono" style="white-space:nowrap"' : ""}>${c}</td>`).join("")}</tr>`).join("") + "</tbody>";
+  $("#refs").innerHTML = `<h3 style="color:var(--ink)">Event references</h3>
+    <p>Event details come from WHO Nepal. The Rasuwa mechanism (a sudden surge from the Tibet Autonomous Region, possibly linked to an upstream ice avalanche and temporary damming) is WHO's preliminary assessment, not a finding of this analysis.</p>
+    <ul><li>WHO Nepal · 2026 Rasuwa flash floods: <span class="mono">who.int/nepal/emergencies/2026-rasuwa-flash-floods</span></li>
+    <li>WHO Nepal · Statement on Rasuwa floods, 26 Aug 2026: <span class="mono">who.int/nepal/news/detail/26-08-2026-who-nepal-statement-on-rasuwa-floods</span></li>
+    <li>Nepal Health Emergency Operation Centre: <span class="mono">heoc.mohp.gov.np</span></li></ul>`;
+};
+
+/* ---------------- boot ---------------- */
+let start = "overview";
+const fromHash = location.hash.slice(1);
+if (PAGES.some(x => x[0] === fromHash)) start = fromHash;
+else { try { const p = localStorage.getItem("nf26-page"); if (PAGES.some(x => x[0] === p)) start = p; } catch (e) {} }
+window.addEventListener("hashchange", () => { const k = location.hash.slice(1); if (PAGES.some(x => x[0] === k)) show(k); });
+show(start);
+})();
+</script>

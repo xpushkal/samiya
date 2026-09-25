@@ -1,0 +1,134 @@
+{
+ "scene": {
+  "stats": {
+   "scene_km2": 36341.3376,
+   "clear_km2": 12632.3091,
+   "clear_pct": 34.76016551465624,
+   "cloud_pct": 56.34866202613302,
+   "shadow_pct": 6.220487327356932,
+   "snow_pct": 0.2928780475047787,
+   "nepal_km2": 6561.8811,
+   "clear_nepal_km2": 681.4566,
+   "water_ndwi_km2": 313.6284,
+   "water_mndwi_km2": 386.3169,
+   "water_nepal_km2": 4.8248999999999995,
+   "veg_km2": 4924.9412999999995,
+   "veg_nepal_km2": 506.57939999999996,
+   "qa_water_km2": 375.41519999999997,
+   "ndwi_vs_qa_water_recall": 78.6240674325387,
+   "mean_ndvi": 0.29116949439048767,
+   "ndvi_hist": [
+    14907,
+    16375,
+    21377,
+    70268,
+    351979,
+    910458,
+    1422100,
+    2005659,
+    1944984,
+    1592166,
+    1221329,
+    933615,
+    718818,
+    564175,
+    458178,
+    377850,
+    309095,
+    241379,
+    175471,
+    126619
+   ]
+  },
+  "layers": {
+   "ndwi": "layers/l9-2026-08-26_scene_ndwi.png",
+   "ndvi": "layers/l9-2026-08-26_scene_ndvi.png",
+   "water": "layers/l9-2026-08-26_scene_water.png",
+   "mask": "layers/l9-2026-08-26_scene_mask.png",
+   "truecolor": "layers/l9-2026-08-26_scene_truecolor.webp"
+  },
+  "bounds": [
+   [
+    27.78813,
+    84.42819
+   ],
+   [
+    29.93337,
+    86.82702
+   ]
+  ],
+  "preview_m": 150
+ },
+ "corridor": {
+  "stats": {
+   "scene_km2": 3979.6074,
+   "clear_km2": 488.40209999999996,
+   "clear_pct": 12.272620158460857,
+   "cloud_pct": 80.07239608610638,
+   "shadow_pct": 4.949221875504604,
+   "snow_pct": 0.7208173348958995,
+   "nepal_km2": 3222.0108,
+   "clear_nepal_km2": 387.7272,
+   "water_ndwi_km2": 0.7461,
+   "water_mndwi_km2": 1.944,
+   "water_nepal_km2": 0.6651,
+   "veg_km2": 394.8471,
+   "veg_nepal_km2": 302.3991,
+   "qa_water_km2": 1.4643,
+   "ndwi_vs_qa_water_recall": 36.63183773816841,
+   "mean_ndvi": 0.6602110266685486,
+   "ndvi_hist": [
+    19,
+    35,
+    87,
+    789,
+    18986,
+    17276,
+    20090,
+    17230,
+    15265,
+    13394,
+    12473,
+    12125,
+    12110,
+    12920,
+    14427,
+    16982,
+    21112,
+    26967,
+    34018,
+    41912
+   ]
+  },
+  "layers": {
+   "ndwi": "layers/l9-2026-08-26_corridor_ndwi.png",
+   "ndvi": "layers/l9-2026-08-26_corridor_ndvi.png",
+   "water": "layers/l9-2026-08-26_corridor_water.png",
+   "mask": "layers/l9-2026-08-26_corridor_mask.png",
+   "truecolor": "layers/l9-2026-08-26_corridor_truecolor.webp"
+  },
+  "bounds": [
+   [
+    27.79088,
+    84.68391
+   ],
+   [
+    28.46222,
+    85.60793
+   ]
+  ],
+  "preview_m": 60
+ },
+ "corridor_bbox": [
+  84.7,
+  27.7,
+  85.6,
+  28.45
+ ],
+ "footprint_bbox": [
+  84.4281883666574,
+  27.787274796022306,
+  86.82755361441949,
+  29.93336763035745
+ ]
+}

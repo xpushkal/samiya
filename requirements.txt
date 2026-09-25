@@ -1,0 +1,10 @@
+rasterio>=1.4
+geopandas>=1.0
+pyogrio
+shapely>=2.0
+pyproj
+h5py
+numpy
+pandas
+pillow
+scipy

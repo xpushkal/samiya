@@ -1,0 +1,263 @@
+{
+ "observations": {
+  "s2-2026-08-25": {
+   "bounds": [
+    [
+     28.80218,
+     83.04928
+    ],
+    [
+     29.81426,
+     84.20376
+    ]
+   ],
+   "layers": {
+    "ndwi": "layers/s2-2026-08-25_ndwi.png",
+    "ndvi": "layers/s2-2026-08-25_ndvi.png",
+    "mask": "layers/s2-2026-08-25_mask.png",
+    "truecolor": "layers/s2-2026-08-25_truecolor.webp"
+   },
+   "pixel_size_m": 10,
+   "footprint_km2": 6975.9816,
+   "clear_km2": 2611.9072,
+   "clear_pct": 37.44142903129217,
+   "clear_nepal_km2": 1196.895,
+   "water_km2": 2.6502000000000003,
+   "water_nepal_km2": 0.7005,
+   "veg_km2": 248.26330000000002,
+   "veg_nepal_km2": 142.6566,
+   "mean_ndvi": 0.15393055324189925,
+   "mean_ndwi": -0.17533168925852344,
+   "ndwi_vs_scl_water_recall": 4.424958183384865,
+   "ndwi_water_confirmed_by_scl": 13.176364047996378,
+   "scl_classes": [
+    {
+     "code": 0,
+     "name": "No data",
+     "km2": 5080.0584,
+     "pct": 42.13704002309216
+    },
+    {
+     "code": 1,
+     "name": "Saturated / defective",
+     "km2": 0.0,
+     "pct": 0.0
+    },
+    {
+     "code": 2,
+     "name": "Topographic shadow",
+     "km2": 5.196000000000001,
+     "pct": 0.04309872893586949
+    },
+    {
+     "code": 3,
+     "name": "Cloud shadow",
+     "km2": 118.73880000000001,
+     "pct": 0.9848905610797576
+    },
+    {
+     "code": 4,
+     "name": "Vegetation",
+     "km2": 41.918800000000005,
+     "pct": 0.34769957631195647
+    },
+    {
+     "code": 5,
+     "name": "Not vegetated",
+     "km2": 2737.6184000000003,
+     "pct": 22.707442908284975
+    },
+    {
+     "code": 6,
+     "name": "Water",
+     "km2": 7.8916,
+     "pct": 0.06545764612592526
+    },
+    {
+     "code": 7,
+     "name": "Unclassified",
+     "km2": 118.2836,
+     "pct": 0.9811148602692095
+    },
+    {
+     "code": 8,
+     "name": "Cloud (medium prob.)",
+     "km2": 1437.2136,
+     "pct": 11.9211084236615
+    },
+    {
+     "code": 9,
+     "name": "Cloud (high prob.)",
+     "km2": 2479.9872,
+     "pct": 20.57049578468552
+    },
+    {
+     "code": 10,
+     "name": "Thin cirrus",
+     "km2": 0.0,
+     "pct": 0.0
+    },
+    {
+     "code": 11,
+     "name": "Snow / ice",
+     "km2": 29.1336,
+     "pct": 0.2416514875531269
+    }
+   ]
+  },
+  "s2-2026-09-04": {
+   "bounds": [
+    [
+     28.80218,
+     83.04928
+    ],
+    [
+     29.81426,
+     84.20376
+    ]
+   ],
+   "layers": {
+    "ndwi": "layers/s2-2026-09-04_ndwi.png",
+    "ndvi": "layers/s2-2026-09-04_ndvi.png",
+    "mask": "layers/s2-2026-09-04_mask.png",
+    "truecolor": "layers/s2-2026-09-04_truecolor.webp"
+   },
+   "pixel_size_m": 10,
+   "footprint_km2": 6894.4292000000005,
+   "clear_km2": 2340.2290000000003,
+   "clear_pct": 33.943767237467604,
+   "clear_nepal_km2": 801.2893,
+   "water_km2": 21.5092,
+   "water_nepal_km2": 7.2631000000000006,
+   "veg_km2": 737.3986,
+   "veg_nepal_km2": 289.8789,
+   "mean_ndvi": 0.2393009742582884,
+   "mean_ndwi": -0.29479547060351785,
+   "ndwi_vs_scl_water_recall": 65.03421853065045,
+   "ndwi_water_confirmed_by_scl": 41.35253751882915,
+   "scl_classes": [
+    {
+     "code": 0,
+     "name": "No data",
+     "km2": 5161.6108,
+     "pct": 42.81348436136575
+    },
+    {
+     "code": 1,
+     "name": "Saturated / defective",
+     "km2": 0.0,
+     "pct": 0.0
+    },
+    {
+     "code": 2,
+     "name": "Topographic shadow",
+     "km2": 208.336,
+     "pct": 1.7280632778258864
+    },
+    {
+     "code": 3,
+     "name": "Cloud shadow",
+     "km2": 615.602,
+     "pct": 5.1061708488027575
+    },
+    {
+     "code": 4,
+     "name": "Vegetation",
+     "km2": 378.18960000000004,
+     "pct": 3.136930534404332
+    },
+    {
+     "code": 5,
+     "name": "Not vegetated",
+     "km2": 2095.6732,
+     "pct": 17.382765816968092
+    },
+    {
+     "code": 6,
+     "name": "Water",
+     "km2": 13.6768,
+     "pct": 0.11344355194574669
+    },
+    {
+     "code": 7,
+     "name": "Unclassified",
+     "km2": 203.4736,
+     "pct": 1.6877316266369389
+    },
+    {
+     "code": 8,
+     "name": "Cloud (medium prob.)",
+     "km2": 1436.6080000000002,
+     "pct": 11.916085215377521
+    },
+    {
+     "code": 9,
+     "name": "Cloud (high prob.)",
+     "km2": 1897.5176000000001,
+     "pct": 15.739144860169674
+    },
+    {
+     "code": 10,
+     "name": "Thin cirrus",
+     "km2": 0.0,
+     "pct": 0.0
+    },
+    {
+     "code": 11,
+     "name": "Snow / ice",
+     "km2": 45.3524,
+     "pct": 0.37617990650329625
+    }
+   ]
+  }
+ },
+ "comparisons": {
+  "s2-2026-08-25__s2-2026-09-04": {
+   "before": "s2-2026-08-25",
+   "after": "s2-2026-09-04",
+   "bounds": [
+    [
+     28.80218,
+     83.04928
+    ],
+    [
+     29.81426,
+     84.20376
+    ]
+   ],
+   "layers": {
+    "water_change": "layers/s2-2026-08-25__s2-2026-09-04_water_change.png",
+    "dndvi": "layers/s2-2026-08-25__s2-2026-09-04_dndvi.png"
+   },
+   "common_clear_km2": 1167.5779,
+   "common_clear_nepal_km2": 429.108,
+   "water_before_km2": 0.3155,
+   "water_after_km2": 10.8063,
+   "persistent_water_km2": 0.2919,
+   "new_water_km2": 10.5144,
+   "lost_water_km2": 0.0236,
+   "persistent_water_nepal_km2": 0.0453,
+   "new_water_nepal_km2": 2.7256,
+   "lost_water_nepal_km2": 0.0131,
+   "veg_before_km2": 98.52420000000001,
+   "veg_after_km2": 420.5115,
+   "bare_before_km2": 1068.7382,
+   "bare_after_km2": 736.2601000000001,
+   "veg_decline_km2": 0.6187,
+   "veg_decline_nepal_km2": 0.39830000000000004,
+   "veg_gain_km2": 197.316,
+   "mean_dndvi": 0.11511263944626307
+  }
+ },
+ "thresholds": {
+  "ndwi_water": 0.0,
+  "nir_water_max": 0.15,
+  "cloud_buffer_m": 60,
+  "ndvi_veg": 0.3,
+  "ndvi_decline": -0.2
+ },
+ "boa_offset": {
+  "s2-2026-08-25": -1000,
+  "s2-2026-09-04": -1000
+ }
+}
