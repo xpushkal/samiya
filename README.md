@@ -1,5 +1,7 @@
 # Nepal Floods 2026
 
+**Live dashboard: <https://nepal-floods-2026.vercel.app>**
+
 Interactive satellite-based analysis of the **26 August 2026 Rasuwa – Bhote Koshi – Trishuli flash
 floods** in Nepal. A Python pipeline turns Sentinel-2, Landsat 9, rainfall, terrain and landslide
 data into statistics and map layers. A single-page dashboard presents them.
