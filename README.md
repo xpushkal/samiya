@@ -18,13 +18,13 @@ Every number on the dashboard is computed from the raw data by the pipeline. Non
 | Terrain Analysis | Corridor elevation and slope, slope classes, landslide slope / elevation profiles |
 | Landslide Analysis | N-LID and ICIMOD inventories, BIPAD reports by province, year and month |
 | Rainfall 2025 | GPM IMERG daily rainfall map with day slider, province totals (2025 context) |
-| Methods / Data Sources | Formulas, thresholds, limitations, sources |
+| Data Sources | Datasets, periods, resolution and event references |
 
 ## Key findings and caveats
 
 - **The Sentinel-2 scenes (tile T44RQT) do not cover the event corridor.** They show Mustang and
   southern Tibet, ~130 km north-west. Tiles T45RUM, T45RUL and T45RTL are needed.
-- **Landsat 9 on the event day is only 12 % cloud-free over the corridor.**
+- **Landsat 9 on the event day is only 14 % cloud-free over the corridor** (69 % cloud, 11 % cloud edge, 5 % shadow).
 - Sentinel-2 shows 10.5 km² of new water (25 Aug → 4 Sep), but haze in the 25 Aug scene inflates
   this figure. It is flagged as low confidence.
 - BIPAD records 263 landslide reports across Nepal between 20 Aug and 13 Sep 2026. 2026 already has
@@ -112,8 +112,9 @@ The date selectors, maps, KPIs and registry table pick up the new record. No UI 
 ## Method summary
 
 - **Reflectance.** Sentinel-2: `(DN − 1000) / 10000` (baseline ≥ 04.00). Landsat 9: `DN × 0.0000275 − 0.2`.
-- **Masking.** Clouds, cirrus, shadows and snow are removed using each scene's own quality layer
-  (SCL / QA_PIXEL), buffered by 60 m.
+- **Masking.** Clouds, cirrus, shadows and snow are removed using each scene's own quality layer.
+  Sentinel-2 SCL clouds are buffered by 60 m. Landsat 9 uses the QA_PIXEL dilated-cloud flag as its
+  buffer, with no extra dilation.
 - **Water.** `NDWI = (Green − NIR) / (Green + NIR) > 0` and NIR < 0.15. The threshold is validated
   against each sensor's water class.
 - **Vegetation.** `NDVI = (NIR − Red) / (NIR + Red) > 0.3`. Decline means ΔNDVI < −0.2.

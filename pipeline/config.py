@@ -27,7 +27,8 @@ CORRIDOR_DISTRICTS = ["Rasuwa", "Nuwakot", "Dhading", "Gorkha", "Chitwan", "Tana
 # validated rather than assumed.
 NDWI_WATER = 0.0
 NIR_WATER_MAX = 0.15   # water must also be dark in NIR (rejects haze / cloud / snow)
-CLOUD_BUFFER_M = 60    # clouds + shadows dilated before analysis
+CLOUD_BUFFER_M = 60    # Sentinel-2: clouds + shadows dilated before analysis (SCL has no edge buffer)
+L9_CLOUD_BUFFER_M = 0  # Landsat 9: QA_PIXEL bit 1 ("dilated cloud") already buffers cloud edges
 NDVI_VEG = 0.3
 NDVI_DECLINE = -0.2
 

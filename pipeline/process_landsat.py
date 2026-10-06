@@ -14,7 +14,7 @@ from rasterio.windows import from_bounds
 
 from common import (NDVI_RAMP, NDWI_RAMP, categorical, colorize, save_png, save_webp, stretch,
                     to_webmerc, write_json)
-from config import CLOUD_BUFFER_M, NIR_WATER_MAX, CORRIDOR_BBOX, NDVI_VEG, NDWI_WATER, NEPAL_ADM0, OBSERVATIONS, RASTERS
+from config import L9_CLOUD_BUFFER_M, NIR_WATER_MAX, CORRIDOR_BBOX, NDVI_VEG, NDWI_WATER, NEPAL_ADM0, OBSERVATIONS, RASTERS
 
 PIX_KM2 = 900 / 1e6
 
@@ -37,11 +37,15 @@ def analyse(obs, window, label, f, nepal):
     with rd("QA_PIXEL") as q:
         qa = q.read(1, window=window); T = q.window_transform(window); crs = q.crs
     fill = (qa & 1) > 0
-    cloud = (qa & (1 << 1 | 1 << 2 | 1 << 3)) > 0
+    core_cloud = (qa & (1 << 2 | 1 << 3)) > 0          # cloud + cirrus
+    cloud_edge = ((qa & (1 << 1)) > 0) & ~core_cloud    # USGS dilated-cloud buffer
+    cloud = core_cloud | cloud_edge
     shadow = (qa & (1 << 4)) > 0
     snow = (qa & (1 << 5)) > 0
     qa_water = (qa & (1 << 7)) > 0
-    buf = binary_dilation(cloud | shadow, iterations=CLOUD_BUFFER_M // 30)
+    buf = cloud | shadow
+    if L9_CLOUD_BUFFER_M:
+        buf = binary_dilation(buf, iterations=L9_CLOUD_BUFFER_M // 30)
     valid = ~fill & ~buf & ~snow
     sr = {}
     for b in ("SR_B2", "SR_B3", "SR_B4", "SR_B5", "SR_B6"):
@@ -61,7 +65,8 @@ def analyse(obs, window, label, f, nepal):
     k = lambda m: float(m.sum() * PIX_KM2)
     stats = dict(
         scene_km2=k(scene), clear_km2=k(valid), clear_pct=100 * valid.sum() / max(scene.sum(), 1),
-        cloud_pct=100 * (cloud & scene).sum() / max(scene.sum(), 1),
+        cloud_pct=100 * (core_cloud & scene).sum() / max(scene.sum(), 1),
+        cloud_edge_pct=100 * (cloud_edge & scene).sum() / max(scene.sum(), 1),
         shadow_pct=100 * (shadow & scene & ~cloud).sum() / max(scene.sum(), 1),
         snow_pct=100 * (snow & scene & ~cloud).sum() / max(scene.sum(), 1),
         nepal_km2=k(scene & in_np), clear_nepal_km2=k(valid & in_np),

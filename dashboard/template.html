@@ -492,11 +492,7 @@ label:has(input:disabled) { opacity: .45; cursor: not-allowed; }
         <div class="stack">
           <div class="panel">
             <div class="panel-head"><h3>BIPAD reports per year</h3><p class="sub" id="ls-year-sub"></p></div>
-            <div class="chart short"><canvas id="c-ls-year" aria-label="Landslide reports per year"></canvas></div>
-          </div>
-          <div class="panel">
-            <div class="panel-head"><h3>Deaths per year</h3></div>
-            <div class="chart short"><canvas id="c-ls-deaths" aria-label="Landslide deaths per year"></canvas></div>
+            <div class="chart tall"><canvas id="c-ls-year" aria-label="Landslide reports per year"></canvas></div>
           </div>
         </div>
       </div>
@@ -537,12 +533,6 @@ label:has(input:disabled) { opacity: .45; cursor: not-allowed; }
         <div class="panel-head"><h3>Daily mean rainfall</h3><div class="chart-legend"><span><i style="background:#d95926"></i>Trishuli corridor</span><span><i style="background:#3987e5"></i>Nepal</span></div><p class="sub">Select a day on the chart to show it on the map</p></div>
         <div class="chart tall"><canvas id="c-rn-daily" aria-label="Daily mean rainfall"></canvas></div>
       </div>
-    </section>
-
-    <!-- ============ METHODS ============ -->
-    <section class="page" id="p-methods" data-title="Methods" hidden>
-      <div class="page-head"><h2>Methods, assumptions &amp; limitations</h2><p>Every figure on this dashboard is computed by the Python pipeline in <code class="mono">pipeline/</code> from the raw files. None are typed in by hand.</p></div>
-      <div class="grid-2" id="methods"></div>
     </section>
 
     <!-- ============ ABOUT ============ -->
@@ -590,12 +580,11 @@ const ICONS = {
   terrain: '<path d="M2 20l6-10 4 6 3-4 7 8z"/><path d="M8 10l2 3"/>',
   slides: '<path d="M3 20h18L8 6z"/><path d="M13 13l2 2M15 10l2 1"/>',
   rain: '<path d="M7 15a4 4 0 0 1 .5-8A5.5 5.5 0 0 1 18 8a3.5 3.5 0 0 1 0 7z"/><path d="M8 18l-1 3M12 18l-1 3M16 18l-1 3"/>',
-  methods: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h7"/>',
   about: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>'
 };
 const PAGES = [["overview", "p-overview", "Dashboard"], ["study", "p-study", "Study Area"], ["sat", "p-sat", "Satellite Data"],
   ["flood", "p-flood", "Flood Mapping"], ["veg", "p-veg", "Vegetation Impact"], ["terrain", "p-terrain", "Terrain Analysis"],
-  ["slides", "p-slides", "Landslide Analysis"], ["rain", "p-rain", "Rainfall 2025"], ["methods", "p-methods", "Methods"], ["about", "p-about", "Data Sources"]];
+  ["slides", "p-slides", "Landslide Analysis"], ["rain", "p-rain", "Rainfall 2025"], ["about", "p-about", "Data Sources"]];
 const inited = {};
 function show(key) {
   PAGES.forEach(([k, id]) => { $("#" + id).hidden = k !== key; });
@@ -803,7 +792,7 @@ INIT.overview = () => {
     kpis("#kpis-overview", [
       { l: `New water · ${short(OBS[c.before].date)} → ${short(OBS[c.after].date)}`, v: f1(c.new_water_km2), u: "km²", c: `Sentinel-2, on ${f0(c.common_clear_km2)} km² clear on both dates`, chip: ["warn", "Low confidence"] },
       { l: "Clear sky over corridor, event day", v: f1(L9.corridor.stats.clear_pct), u: "%", c: `Landsat 9, 26 Aug · ${f0(L9.corridor.stats.clear_km2)} km² usable`, chip: ["crit", "Cloud-limited"] },
-      { l: "Landslide reports, 20 Aug – 13 Sep", v: f0(LS.bipad.event_window.incidents), c: `BIPAD, all Nepal · ${LS.bipad.event_window.deaths} deaths reported`, chip: ["info", "BIPAD reports"] },
+      { l: "Landslide reports, 20 Aug – 13 Sep", v: f0(LS.bipad.event_window.incidents), c: "BIPAD, all Nepal", chip: ["info", "BIPAD reports"] },
       { l: "Mapped landslides in corridor", v: f0(nlidCorr + koshiCorr), c: `${nlidCorr} N-LID (2016–20) · ${koshiCorr} ICIMOD (2024)`, chip: ["info", "Inventories"] },
       { l: "Corridor slopes steeper than 30°", v: f0(steep), u: "%", c: `Mean slope ${f1(T.corridor.mean_slope)}° · ${f0(T.corridor.min_m)}–${f0(T.corridor.max_m)} m`, chip: ["warn", "Interim DEM"] },
       { l: "Analysis window", v: String(Math.round((Date.parse(R.observations.at(-1).date) - Date.parse(R.observations[0].date)) / 864e5)), u: "days", c: `${short(R.observations[0].date)} – ${fmtDate(R.observations.at(-1).date)} · ${R.observations.length} scenes`, chip: ["good", "All values computed"] },
@@ -983,8 +972,7 @@ INIT.slides = () => {
   const B = LS.bipad, y26 = B.yearly.find(y => y.year === 2026);
   kpis("#kpis-slides", [
     { l: "BIPAD landslide reports", v: f0(B.count), c: `${fmtDate(B.period[0])} – ${fmtDate(B.period[1])}` },
-    { l: "Reports in 2026 so far", v: f0(y26.incidents), c: `Highest of any year · ${f0(y26.deaths)} deaths`, chip: ["crit", "Record year"] },
-    { l: "Deaths, 2020 – 2026", v: f0(B.totals.deaths), c: `${f0(B.totals.missing)} missing · ${f0(B.totals.injured)} injured` },
+    { l: "Reports in 2026 so far", v: f0(y26.incidents), c: "Highest of any year", chip: ["crit", "Record year"] },
     { l: "Mapped landslides in corridor", v: f0(nlidCorr + koshiCorr), c: `${nlidCorr} N-LID · ${koshiCorr} ICIMOD Koshi`, chip: ["info", "Inventories"] },
   ]);
   const m = baseMap("map-ls", "slides");
@@ -1003,8 +991,6 @@ INIT.slides = () => {
   const yrs = B.yearly.map(y => String(y.year));
   chart("#c-ls-year", { type: "bar", data: { labels: yrs, datasets: [{ data: B.yearly.map(y => y.incidents), backgroundColor: yrs.map(y => y === "2026" ? C.ochre : "#8a6a3e"), ...barDefaults }] },
     options: { plugins: { legend: { display: false }, tooltip: { callbacks: { label: x => `${f0(x.raw)} reports${yrs[x.dataIndex] === "2026" ? " (to 13 Sep)" : ""}` } } }, scales: { x: noGrid(), y: axis("", { beginAtZero: true }) } } });
-  chart("#c-ls-deaths", { type: "bar", data: { labels: yrs, datasets: [{ data: B.yearly.map(y => y.deaths), backgroundColor: C.crit, ...barDefaults }] },
-    options: { plugins: { legend: { display: false }, tooltip: { callbacks: { label: x => `${f0(x.raw)} deaths` } } }, scales: { x: noGrid(), y: axis("", { beginAtZero: true }) } } });
   const mon = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"], mx = Math.max(...Object.values(B.monthly).flat());
   let h = "<div></div>" + mon.map(x => `<div>${x}</div>`).join("");
   const endY = +B.period[1].slice(0, 4), endM = +B.period[1].slice(5, 7);
@@ -1013,8 +999,8 @@ INIT.slides = () => {
     const k = v ? Math.min(6, Math.floor(v / mx * 6.99)) : -1, partial = +y === endY && i + 1 === endM ? " (to " + short(B.period[1]) + ")" : "";
     return `<div class="c" title="${MON[i]} ${y}: ${v} reports${partial}" style="background:${k < 0 ? "transparent" : SEQ[k]};color:${k < 0 ? "var(--muted)" : seqText(k)}">${v || "·"}</div>`; }).join(""); });
   $("#heat").innerHTML = h;
-  $("#tbl-recent").innerHTML = `<thead><tr><th>Date</th><th>Location</th><th>District</th><th class="n">Deaths</th><th class="n">Missing</th></tr></thead><tbody>` +
-    B.corridor.recent.map(r => `<tr><td class="mono" style="white-space:nowrap">${r.date}</td><td>${r.Title.replace(/^Landslide at /, "")}</td><td>${r.District}</td><td class="n">${r.deaths || "–"}</td><td class="n">${r.missing || "–"}</td></tr>`).join("") + "</tbody>";
+  $("#tbl-recent").innerHTML = `<thead><tr><th>Date</th><th>Location</th><th>District</th></tr></thead><tbody>` +
+    B.corridor.recent.map(r => `<tr><td class="mono" style="white-space:nowrap">${r.date}</td><td>${r.Title.replace(/^Landslide at /, "")}</td><td>${r.District}</td></tr>`).join("") + "</tbody>";
 };
 
 INIT.rain = () => {
@@ -1064,26 +1050,6 @@ INIT.rain = () => {
   chart("#c-rn-prov", { type: "bar", data: { labels: pv.map(p => p[0]), datasets: [{ data: pv.map(p => p[1].total_mm), backgroundColor: pv.map(p => p[0] === "Bagmati" ? C.orange : C.blue), ...barDefaults, borderRadius: { topRight: 4, bottomRight: 4 }, maxBarThickness: 20 }] },
     options: { indexAxis: "y", plugins: { legend: { display: false }, tooltip: { callbacks: { label: x => `${f0(x.raw)} mm · peak day ${f0(pv[x.dataIndex][1].peak_day_mm)} mm${pv[x.dataIndex][0] === "Bagmati" ? " · contains the corridor" : ""}` } } }, scales: { x: axis("mm", { beginAtZero: true }), y: noGrid() } } });
   paint();
-};
-
-INIT.methods = () => {
-  const th = R.thresholds;
-  const blocks = [
-    ["Processing pipeline", `<ol><li>Read raw scenes and validate CRS, extent and resolution.</li><li>Scale to reflectance: Sentinel-2 <code>(DN ${th ? "− 1000" : ""}) / 10000</code>; Landsat <code>DN × 0.0000275 − 0.2</code>.</li>
-      <li>Mask clouds, cirrus, shadows and snow with the scene's own quality layer (SCL / QA_PIXEL), buffered by ${th.cloud_buffer_m} m.</li><li>Compute NDWI and NDVI per pixel at native resolution.</li>
-      <li>Build before/after change on pixels clear in both scenes.</li><li>Count pixels × pixel area for every km² figure.</li><li>Write GeoTIFFs, JSON statistics and web overlays; register each observation.</li></ol>`],
-    ["Indices and thresholds", `<span class="formula">NDWI = (Green − NIR) / (Green + NIR)       S2: B3, B8 · L9: B3, B5
-NDVI = (NIR − Red) / (NIR + Red)           S2: B8, B4 · L9: B5, B4
-MNDWI = (Green − SWIR1) / (Green + SWIR1)  L9 only, B3, B6</span>
-      <p>Water: NDWI &gt; ${th.ndwi_water} <b>and</b> NIR &lt; ${th.nir_water_max}. The NIR rule removes haze, cloud edges and snow that NDWI alone lets through. Vegetated: NDVI &gt; ${th.ndvi_veg}. Decline: ΔNDVI &lt; ${th.ndvi_decline}.</p>
-      <p>Thresholds are checked against each sensor's independent water flag (Flood Mapping → Validation). They are not treated as universal constants.</p>`],
-    ["Adding a new satellite date", `<p>The dashboard is data-driven. To add a scene:</p><ol><li>Download it into <code>data/raw/sentinel2/</code> or <code>data/raw/landsat9/</code>.</li><li>Add one record to <code>OBSERVATIONS</code> in <code>pipeline/config.py</code> (and a pair to <code>COMPARISONS</code> if it should be compared).</li>
-      <li>Run <code>python pipeline/run_all.py</code>.</li></ol><p>The date selectors, maps, KPI tiles and registry table pick it up with no UI changes.</p>`],
-    ["Known limitations", `<ul><li>Sentinel-2 tile T44RQT does not cover the event corridor. Tiles T45RUM, T45RUL and T45RTL do.</li><li>Landsat 9 on the event day is ${f0(100 - L9.corridor.stats.clear_pct)} % unusable over the corridor (cloud, shadow, buffer).</li>
-      <li>Haze in the 25 Aug scene inflates Sentinel-2 water and vegetation change.</li><li>The DEM is interim (~67 m, SRTM-derived AWS Terrain Tiles). Replace with SRTM 1″ (30 m) when downloaded; slopes will steepen.</li>
-      <li>BIPAD reports carry no coordinates and are shown by district or province only.</li><li>Rainfall is 2025 context, not 2026 event rainfall.</li><li>Sentinel-1 SAR, which sees through cloud, is deferred.</li><li>No machine-learning results are shown. None have been trained or evaluated yet.</li></ul>`],
-  ];
-  $("#methods").innerHTML = blocks.map(([t, b]) => `<div class="panel prose"><h3 style="color:var(--ink)">${t}</h3>${b}</div>`).join("");
 };
 
 INIT.about = () => {

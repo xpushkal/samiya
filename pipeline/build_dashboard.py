@@ -29,6 +29,18 @@ def load(name):
     return json.loads((STATS / name).read_text())
 
 
+CASUALTY_KEYS = {"deaths", "deaths_all", "missing", "injured"}
+
+
+def strip_casualties(obj):
+    """Casualty figures stay in outputs/stats but are not published on the dashboard."""
+    if isinstance(obj, dict):
+        return {k: strip_casualties(v) for k, v in obj.items() if k not in CASUALTY_KEYS}
+    if isinstance(obj, list):
+        return [strip_casualties(v) for v in obj]
+    return obj
+
+
 def encode(rel):
     """Layer file -> WebP data URI (lossless for class maps, lossy for continuous ramps)."""
     im = Image.open(OUT / rel).convert("RGBA")
@@ -55,7 +67,8 @@ def geo(path, tol, props=()):
 
 def main():
     s2, l9 = load("sentinel2.json"), load("landsat9.json")
-    terrain, rain, slides = load("terrain.json"), load("rainfall.json"), load("landslides.json")
+    terrain, rain = load("terrain.json"), load("rainfall.json")
+    slides = strip_casualties(load("landslides.json"))
 
     observations = []
     for o in OBSERVATIONS:
