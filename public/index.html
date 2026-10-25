@@ -204,7 +204,9 @@ label:has(input:disabled) { opacity: .45; cursor: not-allowed; }
 .narration-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
 .narration h3 { display: flex; align-items: center; gap: 8px; margin-right: auto; font-size: 15px; }
 .narration h3 svg { width: 19px; height: 19px; fill: none; stroke: var(--accent); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; flex: none; }
-.narration-controls { display: flex; flex-wrap: wrap; gap: 8px; }
+.narration-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.narration-speed { display: flex; align-items: center; gap: 6px; color: var(--ink-2); font-size: 12px; }
+.narration-speed select { padding-block: 6px; font-size: 12.5px; }
 .narration .btn { min-height: 30px; display: inline-flex; align-items: center; justify-content: center; }
 .narration-play { color: var(--accent); }
 .narration .btn:disabled { opacity: .45; cursor: not-allowed; border-color: var(--line-2); }
@@ -578,10 +580,39 @@ const NARRATIONS = {
   rain: "This section visualizes daily rainfall from NASA’s GPM IMERG Final dataset for July and August 2025. Maps, time-series charts, and regional summaries help describe historical rainfall patterns and provide context for examining landslide activity. These data represent 2025 conditions and must not be interpreted as direct rainfall measurements from the August 2026 flood event.",
   about: "This section documents the datasets used in the project, including Sentinel-2, Landsat 9, GPM IMERG rainfall, and the N-LID, ICIMOD, and BIPAD landslide sources. It identifies their observation periods, purposes, and relevant limitations. Reviewing these sources helps users understand where the information comes from and how confidently the results can be interpreted."
 };
-const supported = "speechSynthesis" in window && typeof window.SpeechSynthesisUtterance === "function";
-const synth = supported ? window.speechSynthesis : null;
+const SPOKEN_TERMS = {"NDWI": "N D W I", "NDVI": "N D V I", "GPM": "G P M", "N-LID": "N L I D"};
+/*__RECORDINGS_START__*/
+const RECORDINGS = {
+  "voice": "en-IN-NeerjaNeural",
+  "rate": "-5%",
+  "sources": {
+    "overview": "audio/overview-87d57a84aa32.mp3",
+    "study": "audio/study-45b8d591ec8d.mp3",
+    "sat": "audio/sat-cb9de80f3e09.mp3",
+    "flood": "audio/flood-0265d69e0c91.mp3",
+    "veg": "audio/veg-205180962165.mp3",
+    "terrain": "audio/terrain-05f4e1476ca5.mp3",
+    "slides": "audio/slides-ca6f10064f4e.mp3",
+    "rain": "audio/rain-04dbf18c31f6.mp3",
+    "about": "audio/about-b35d2db658fe.mp3"
+  }
+};
+/*__RECORDINGS_END__*/
+const speechSupported = "speechSynthesis" in window && typeof window.SpeechSynthesisUtterance === "function";
+const audioSupported = typeof window.Audio === "function";
+const supported = audioSupported || speechSupported;
+const synth = speechSupported ? window.speechSynthesis : null;
 const players = new Map();
-let activeKey = null, utterance = null, chunks = [], chunkIndex = 0, phase = "idle", playbackId = 0, voice = null;
+let activeKey = null, utterance = null, chunks = [], chunkIndex = 0, phase = "idle", playbackId = 0, voice = null, audio = null, engine = null;
+let playbackRate = 1;
+try {
+  const saved = Number(localStorage.getItem("nf26-voice-rate"));
+  if ([0.85, 1, 1.15, 1.25].includes(saved)) playbackRate = saved;
+} catch (e) {}
+
+function spokenText(text) {
+  return text.replace(/\b(NDWI|NDVI|GPM|N-LID)\b/g, term => SPOKEN_TERMS[term]);
+}
 
 function updatePlayer(key, message) {
   const player = players.get(key);
@@ -594,13 +625,24 @@ function updatePlayer(key, message) {
   if (message) player.status.textContent = message;
 }
 
-function stopNarration(message = "Ready to listen.") {
-  const previous = activeKey;
+function releaseAudio() {
+  const previous = audio;
+  audio = null;
+  if (previous) {
+    previous.pause();
+    previous.removeAttribute("src");
+    previous.load();
+  }
+}
+
+function stopNarration(message = "Natural AI voice. Ready to listen.") {
+  const previous = activeKey, wasSpeech = engine === "speech";
   // Invalidate callbacks before cancel(), which can emit asynchronous end/error events.
   playbackId++;
-  activeKey = null; utterance = null; chunks = []; chunkIndex = 0; phase = "idle"; voice = null;
+  activeKey = null; utterance = null; chunks = []; chunkIndex = 0; phase = "idle"; voice = null; engine = null;
+  releaseAudio();
+  if (wasSpeech) synth.cancel();
   if (previous) {
-    synth.cancel();
     updatePlayer(previous, message);
   }
 }
@@ -627,11 +669,11 @@ function speakNext(id) {
   utterance = next; // Keep a reference while the browser is speaking.
   next.lang = voice ? voice.lang : "en-US";
   if (voice) next.voice = voice;
-  next.rate = 0.95;
+  next.rate = 0.95 * playbackRate;
   next.onstart = () => {
     if (id !== playbackId || utterance !== next || phase === "paused") return;
     phase = "playing";
-    updatePlayer(activeKey, "Playing overview.");
+    updatePlayer(activeKey, "Playing overview with device voice.");
   };
   next.onend = () => {
     if (id !== playbackId || utterance !== next) return;
@@ -647,6 +689,62 @@ function speakNext(id) {
   catch (e) { stopNarration("Voice playback is unavailable. You can read the transcript below."); }
 }
 
+function startDeviceVoice(key, id) {
+  if (id !== playbackId || activeKey !== key) return;
+  releaseAudio();
+  if (!speechSupported) { stopNarration("Audio could not load. Try Listen again, or read the transcript below."); return; }
+  engine = "speech";
+  chunks = splitNarration(spokenText(NARRATIONS[key]));
+  chunkIndex = 0;
+  try {
+    synth.cancel();
+    synth.resume();
+    // Prefer natural voices when a recording cannot load; device defaults vary.
+    const quality = v => (/natural|neural|premium|enhanced/i.test(v.name) ? 100 : 0)
+      + (/google|samantha|daniel|karen|rishi/i.test(v.name) ? 20 : 0)
+      + (v.lang === "en-IN" ? 5 : 0) + (v.default ? 1 : 0);
+    const english = synth.getVoices().filter(v => /^en\b/i.test(v.lang)).sort((a, b) => quality(b) - quality(a));
+    voice = english[0] || null;
+    speakNext(id);
+  } catch (e) { stopNarration("Voice playback is unavailable. You can read the transcript below."); }
+}
+
+function playRecording(recording, key, id) {
+  const pending = recording.play();
+  if (pending) pending.catch(error => {
+    if (id !== playbackId || audio !== recording) return;
+    if (error.name === "AbortError" && phase === "paused") return;
+    if (error.name === "NotAllowedError") {
+      stopNarration("Select Listen to start the overview.");
+      return;
+    }
+    startDeviceVoice(key, id);
+  });
+}
+
+function startRecording(key, id) {
+  if (!audioSupported || !RECORDINGS.sources[key]) { startDeviceVoice(key, id); return; }
+  engine = "audio";
+  const recording = new window.Audio(RECORDINGS.sources[key]);
+  audio = recording;
+  recording.preload = "none";
+  recording.playbackRate = playbackRate;
+  recording.preservesPitch = true;
+  recording.onplaying = () => {
+    if (id !== playbackId || audio !== recording || phase === "paused") return;
+    phase = "playing";
+    updatePlayer(key, "Playing overview · natural AI voice.");
+  };
+  recording.onended = () => {
+    if (id === playbackId && audio === recording) stopNarration("Overview finished. Listen again whenever you like.");
+  };
+  recording.onerror = () => {
+    if (id === playbackId && audio === recording) startDeviceVoice(key, id);
+  };
+  try { playRecording(recording, key, id); }
+  catch (e) { startDeviceVoice(key, id); }
+}
+
 function toggleNarration(key) {
   if (!supported) return;
   if (activeKey === key) {
@@ -654,26 +752,23 @@ function toggleNarration(key) {
       if (phase === "paused") {
         phase = "playing";
         updatePlayer(key, "Playing overview.");
-        synth.resume();
-        if (!utterance) speakNext(playbackId);
+        if (engine === "audio") playRecording(audio, key, playbackId);
+        else {
+          synth.resume();
+          if (!utterance) speakNext(playbackId);
+        }
       } else {
-        synth.pause();
         phase = "paused";
+        if (engine === "audio") audio.pause(); else synth.pause();
         updatePlayer(key, "Overview paused.");
       }
     } catch (e) { stopNarration("Voice playback could not continue. Try Listen again, or read the transcript below."); }
     return;
   }
   stopNarration();
-  activeKey = key; phase = "starting"; chunks = splitNarration(NARRATIONS[key]);
+  activeKey = key; phase = "starting";
   updatePlayer(key, "Starting overview…");
-  try {
-    synth.cancel();
-    synth.resume(); // Clear any paused state left by the previous overview.
-    const english = synth.getVoices().filter(v => /^en\b/i.test(v.lang));
-    voice = english.find(v => v.default) || english.find(v => v.localService) || english[0] || null;
-    speakNext(playbackId);
-  } catch (e) { stopNarration("Voice playback is unavailable. You can read the transcript below."); }
+  startRecording(key, playbackId);
 }
 
 Object.entries(NARRATIONS).forEach(([key, text]) => {
@@ -685,18 +780,27 @@ Object.entries(NARRATIONS).forEach(([key, text]) => {
   box.setAttribute("aria-labelledby", "narration-title-" + key);
   box.innerHTML = `<div class="narration-bar">
     <h3 id="narration-title-${key}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4zM15 8a6 6 0 0 1 0 8M18 5a10 10 0 0 1 0 14"/></svg>Audio overview</h3>
-    <div class="narration-controls"><button type="button" class="btn narration-play" aria-controls="narration-text-${key}">Listen to overview</button><button type="button" class="btn narration-stop" disabled>Stop</button></div>
+    <div class="narration-controls"><button type="button" class="btn narration-play" aria-controls="narration-text-${key}">Listen to overview</button><button type="button" class="btn narration-stop" disabled>Stop</button>
+    <div class="narration-speed"><label for="narration-speed-${key}">Speed</label><select id="narration-speed-${key}" aria-label="Narration speed: ${page.dataset.title}"><option value="0.85">0.85×</option><option value="1">1×</option><option value="1.15">1.15×</option><option value="1.25">1.25×</option></select></div></div>
     </div>
     <p class="narration-status" role="status" aria-live="polite" aria-atomic="true"></p>
     <details><summary>Read transcript</summary><p id="narration-text-${key}"></p></details>`;
   box.querySelector("details p").textContent = text;
-  const player = { title: page.dataset.title, play: box.querySelector(".narration-play"), stop: box.querySelector(".narration-stop"), status: box.querySelector(".narration-status") };
+  const player = { title: page.dataset.title, play: box.querySelector(".narration-play"), stop: box.querySelector(".narration-stop"), status: box.querySelector(".narration-status"), speed: box.querySelector("select") };
   player.play.disabled = !supported;
   player.play.onclick = () => toggleNarration(key);
   player.stop.setAttribute("aria-label", "Stop overview: " + player.title);
   player.stop.onclick = () => stopNarration();
+  player.speed.value = String(playbackRate);
+  player.speed.disabled = !supported;
+  player.speed.onchange = () => {
+    playbackRate = Number(player.speed.value);
+    if (audio) audio.playbackRate = playbackRate;
+    players.forEach(p => { p.speed.value = String(playbackRate); });
+    try { localStorage.setItem("nf26-voice-rate", playbackRate); } catch (e) {}
+  };
   players.set(key, player);
-  updatePlayer(key, supported ? "Ready to listen." : "Voice playback is unavailable in this browser. You can read the transcript below.");
+  updatePlayer(key, supported ? "Natural AI voice. Ready to listen." : "Voice playback is unavailable in this browser. You can read the transcript below.");
   const heading = page.querySelector(".page-head");
   if (heading) heading.after(box); else page.prepend(box);
 });

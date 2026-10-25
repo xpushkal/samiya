@@ -1,0 +1,51 @@
+{
+  "voice": "en-IN-NeerjaNeural",
+  "rate": "-5%",
+  "recordings": {
+    "overview": {
+      "src": "audio/overview-87d57a84aa32.mp3",
+      "transcript_sha256": "3598944ea4e476ca3a6ea4b7c6a4824c1024dc89888d4070f803db7882d8cd21",
+      "audio_sha256": "503e06c56b63f601bf17ce6a3302970d9497d1c7c6b3f861a230cbc26c668a40"
+    },
+    "study": {
+      "src": "audio/study-45b8d591ec8d.mp3",
+      "transcript_sha256": "71a70ee7e2f26eb2ed1b0e33751b2f1b8bd0b6f51818686046f984aaac7e3dbd",
+      "audio_sha256": "47b4625d96f7c4739afbc48ae390ab21c48c956f898450ed25e4f9cc90de8d98"
+    },
+    "sat": {
+      "src": "audio/sat-cb9de80f3e09.mp3",
+      "transcript_sha256": "f0ad0cdb509a77ea62dca04d3ae314471cf3096a1e01759d9af96c38f4762223",
+      "audio_sha256": "2fbcad9d65598f023656c59470aaa8f17587facf302f4c4228142faad61b85c9"
+    },
+    "flood": {
+      "src": "audio/flood-0265d69e0c91.mp3",
+      "transcript_sha256": "7781a7d01ebd7812d4e895deb62b767833fd3b10b536f90d354e430a63124054",
+      "audio_sha256": "a8c8438a553c35bcd1564793ec7770ede95fd46e2148bf7166f6c5af96b2bdb1"
+    },
+    "veg": {
+      "src": "audio/veg-205180962165.mp3",
+      "transcript_sha256": "2a8cd2dcd943dc35c998b8db9c2b831abf09f55996dd3a087f9a691e24055d48",
+      "audio_sha256": "172cf33a1edac8a48b89ccfc04a98bcfd398553acc2155d7cb88092ccb141dcd"
+    },
+    "terrain": {
+      "src": "audio/terrain-05f4e1476ca5.mp3",
+      "transcript_sha256": "09d54a862852ca08d49c6061468e08f2239fb536f3cd3af5e876387bfaf491d2",
+      "audio_sha256": "4f1ac1fbfe7018d0815368afe0018e1e15a3d39dd5ddaa913daad793b60d96da"
+    },
+    "slides": {
+      "src": "audio/slides-ca6f10064f4e.mp3",
+      "transcript_sha256": "54dc273d0320dfd5631034bc6c4094610d47b7a3d7224685e3d097ca65418835",
+      "audio_sha256": "1aba1a04ee8a8f55cf24978310f5dbb4db9fcb799f4c08c0cc1a443e6c7c339d"
+    },
+    "rain": {
+      "src": "audio/rain-04dbf18c31f6.mp3",
+      "transcript_sha256": "2b6a08a50816f36bde23347ea9144bd1d4f0b5455a2c1ccc1d98df133d3e9aea",
+      "audio_sha256": "0af65c6850fb3ae576a21886f76eee2626a591533b3058baf9a5fc7dca3e83d0"
+    },
+    "about": {
+      "src": "audio/about-b35d2db658fe.mp3",
+      "transcript_sha256": "df9a866e5dc5d6ecb415718de051be12bb5082a383403580192bae180cd8764b",
+      "audio_sha256": "fd311ab31cb669bb5b78d9dfa4553c6e151f87d24cb54c4a26a8cfa92cf820cf"
+    }
+  }
+}

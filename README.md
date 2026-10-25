@@ -38,7 +38,8 @@ Every number on the dashboard is computed from the raw data by the pipeline. Non
 
 ```
 samiya/
-├── public/                  Deployable site (built): index.html has all data and images inlined
+├── public/                  Deployable site: index.html has all data and images inlined
+│   └── audio/               Natural voice MP3s and their source/audio checksums
 ├── dashboard/
 │   ├── template.html        Dashboard source (HTML/CSS/JS, Leaflet + Chart.js from cdnjs)
 │   └── vendor/leaflet.css   Inlined into the build
@@ -51,6 +52,7 @@ samiya/
 │   ├── process_rainfall.py  GPM IMERG daily aggregation
 │   ├── process_landslides.py N-LID, ICIMOD Koshi, BIPAD standardisation
 │   ├── build_dashboard.py   Registry + builds public/index.html
+│   ├── generate_narration.py Generates static neural voice recordings from the page scripts
 │   └── run_all.py           Runs every step
 ├── outputs/
 │   ├── stats/               JSON results the dashboard reads
@@ -74,8 +76,10 @@ Open `public/index.html` in a browser. It needs an internet connection for fonts
 
 Each of the nine pages has an **Audio overview** with the supplied narration. Click **Listen to
 overview** to hear it, then use **Pause**, **Resume**, or **Stop**. Switching pages stops the current
-narration. **Read transcript** displays the full text, including when voice playback is unavailable.
-Narration uses an English voice provided by the browser or device and starts only when requested.
+narration. **Read transcript** displays the full original text. The narration uses static neural
+voice recordings (Neerja, Indian English), with smoother pacing and spoken acronyms. Recordings
+load only when requested, and **Speed** adjusts playback across all pages and saves the preference.
+If a recording cannot load, the dashboard uses an available English device voice.
 
 ### Deploy on Vercel
 
@@ -95,6 +99,18 @@ pip install -r requirements.txt
 # edit dashboard/template.html, then:
 python pipeline/build_dashboard.py      # writes public/index.html
 ```
+
+After editing the narration scripts in `dashboard/template.html`, regenerate the audio before
+rebuilding the dashboard:
+
+```bash
+uv run --with edge-tts python pipeline/generate_narration.py
+python pipeline/build_dashboard.py
+```
+
+Generation uses Microsoft's Edge speech service through `edge-tts` and needs an internet connection.
+The committed MP3s play directly from `public/audio/`; visitors do not connect to the generation
+service. Filenames include a content hash so regenerated recordings refresh correctly after deployment.
 
 ### Re-run the full analysis
 
