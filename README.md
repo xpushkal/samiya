@@ -72,6 +72,11 @@ samiya/
 
 Open `public/index.html` in a browser. It needs an internet connection for fonts, Leaflet and Chart.js.
 
+Each of the nine pages has an **Audio overview** with the supplied narration. Click **Listen to
+overview** to hear it, then use **Pause**, **Resume**, or **Stop**. Switching pages stops the current
+narration. **Read transcript** displays the full text, including when voice playback is unavailable.
+Narration uses an English voice provided by the browser or device and starts only when requested.
+
 ### Deploy on Vercel
 
 1. Import this repository in Vercel.

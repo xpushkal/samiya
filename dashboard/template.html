@@ -196,6 +196,20 @@ label:has(input:disabled) { opacity: .45; cursor: not-allowed; }
 .btn:hover { border-color: var(--accent); }
 .btn:focus-visible { outline: 2px solid var(--accent); }
 
+/* ---------- spoken page overviews ---------- */
+.narration { display: grid; gap: 10px; padding: 14px 16px; border: 1px solid var(--line-2); border-radius: var(--r); background: var(--panel); }
+.narration-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.narration h3 { display: flex; align-items: center; gap: 8px; margin-right: auto; font-size: 15px; }
+.narration h3 svg { width: 19px; height: 19px; fill: none; stroke: var(--accent); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.narration-controls { display: flex; flex-wrap: wrap; gap: 8px; }
+.narration .btn { min-height: 30px; display: inline-flex; align-items: center; justify-content: center; }
+.narration-play { color: var(--accent); }
+.narration .btn:disabled { opacity: .45; cursor: not-allowed; border-color: var(--line-2); }
+.narration-status { margin: 0; color: var(--ink-2); font-size: 12px; }
+.narration details { color: var(--ink-2); font-size: 13px; }
+.narration summary { width: fit-content; cursor: pointer; color: var(--accent); }
+.narration details p { margin: 10px 0 0; max-width: 95ch; line-height: 1.7; }
+
 .prose { display: grid; gap: 10px; max-width: 76ch; color: var(--ink-2); }
 .prose p, .prose ul, .prose ol { margin: 0; }
 .prose li + li { margin-top: 4px; }
@@ -546,6 +560,149 @@ label:has(input:disabled) { opacity: .45; cursor: not-allowed; }
   </main>
 </div>
 
+<script>
+/* Page narration is independent of the map and chart libraries. */
+(() => {
+const NARRATIONS = {
+  overview: "Welcome to the Nepal Floods 2026 monitoring dashboard. This platform integrates satellite imagery, water and vegetation indices, terrain information, rainfall records, and landslide inventories to examine the environmental context of the August 26 flood event. Use the navigation menu to explore each analysis module. Please note that the results depend on data coverage, image quality, and the limitations of the available datasets.",
+  study: "This section introduces the Rasuwa and Bhote Koshi–Trishuli corridor in Nepal, the region associated with the August 26, 2026 flood event. The map provides geographic context for interpreting the satellite observations and supporting datasets. Checking the actual spatial coverage is essential because some satellite scenes may not include the event corridor.",
+  sat: "This section presents the satellite observations used in the analysis. Sentinel-2 imagery from August 25 and September 4, 2026, was selected for before-and-after comparison, while Landsat 9 imagery from August 26 provides an event-day observation. However, the selected Sentinel-2 tile does not cover the actual event corridor, and the Landsat 9 scene has substantial cloud contamination over that area. These limitations must be considered when interpreting the results.",
+  flood: "This module uses the Normalized Difference Water Index, or NDWI, to identify water-related spectral patterns and compare observations across dates. The current processing estimates approximately 10.5 square kilometres of new water, but the result has low confidence because haze affects the baseline image and the selected Sentinel-2 scenes do not cover the actual event corridor. This estimate should not be treated as a verified flood extent.",
+  veg: "This module analyses vegetation-related changes using the Normalized Difference Vegetation Index, or NDVI, calculated from red and near-infrared reflectance. Comparing NDVI values across observations helps identify changes in vegetation conditions. These changes do not independently confirm flood damage because cloud contamination, seasonal variation, and differences in land cover can also affect the results.",
+  terrain: "This section presents elevation and slope information for understanding the physical landscape around the study region. A digital elevation model can help describe terrain variation and the relationship between slopes and river corridors. The current terrain layer uses an interim elevation dataset at approximately 67-metre resolution, so fine-scale terrain features may not be represented accurately.",
+  slides: "This module combines landslide information from the N-LID historical inventory, the ICIMOD Koshi Basin inventory from 2024, and incident reports from Nepal’s BIPAD portal. These datasets help examine historical landslide distributions and reported incidents over time. Because they differ in coverage, dates, and collection methods, their counts are not directly equivalent and do not establish that individual landslides were triggered by the 2026 flood.",
+  rain: "This section visualizes daily rainfall from NASA’s GPM IMERG Final dataset for July and August 2025. Maps, time-series charts, and regional summaries help describe historical rainfall patterns and provide context for examining landslide activity. These data represent 2025 conditions and must not be interpreted as direct rainfall measurements from the August 2026 flood event.",
+  about: "This section documents the datasets used in the project, including Sentinel-2, Landsat 9, GPM IMERG rainfall, and the N-LID, ICIMOD, and BIPAD landslide sources. It identifies their observation periods, purposes, and relevant limitations. Reviewing these sources helps users understand where the information comes from and how confidently the results can be interpreted."
+};
+const supported = "speechSynthesis" in window && typeof window.SpeechSynthesisUtterance === "function";
+const synth = supported ? window.speechSynthesis : null;
+const players = new Map();
+let activeKey = null, utterance = null, chunks = [], chunkIndex = 0, phase = "idle", playbackId = 0, voice = null;
+
+function updatePlayer(key, message) {
+  const player = players.get(key);
+  if (!player) return;
+  const active = activeKey === key;
+  const action = active ? (phase === "paused" ? "Resume" : "Pause") : "Listen to overview";
+  player.play.textContent = action;
+  player.play.setAttribute("aria-label", `${action}: ${player.title}`);
+  player.stop.disabled = !active;
+  if (message) player.status.textContent = message;
+}
+
+function stopNarration(message = "Ready to listen.") {
+  const previous = activeKey;
+  // Invalidate callbacks before cancel(), which can emit asynchronous end/error events.
+  playbackId++;
+  activeKey = null; utterance = null; chunks = []; chunkIndex = 0; phase = "idle"; voice = null;
+  if (previous) {
+    synth.cancel();
+    updatePlayer(previous, message);
+  }
+}
+
+function splitNarration(text) {
+  // Short utterances keep long overviews reliable across browser speech engines.
+  const parts = [];
+  let rest = text;
+  while (rest.length > 180) {
+    const head = rest.slice(0, 181);
+    const punctuation = Math.max(...[". ", "? ", "! ", "; ", ", "].map(mark => head.lastIndexOf(mark)));
+    const end = punctuation > 60 ? punctuation + 1 : head.lastIndexOf(" ");
+    parts.push(rest.slice(0, end).trim());
+    rest = rest.slice(end).trim();
+  }
+  if (rest) parts.push(rest);
+  return parts;
+}
+
+function speakNext(id) {
+  if (id !== playbackId || !activeKey || phase === "paused") return;
+  if (chunkIndex >= chunks.length) { stopNarration("Overview finished. Listen again whenever you like."); return; }
+  const next = new window.SpeechSynthesisUtterance(chunks[chunkIndex]);
+  utterance = next; // Keep a reference while the browser is speaking.
+  next.lang = voice ? voice.lang : "en-US";
+  if (voice) next.voice = voice;
+  next.rate = 0.95;
+  next.onstart = () => {
+    if (id !== playbackId || utterance !== next || phase === "paused") return;
+    phase = "playing";
+    updatePlayer(activeKey, "Playing overview.");
+  };
+  next.onend = () => {
+    if (id !== playbackId || utterance !== next) return;
+    utterance = null;
+    chunkIndex++;
+    speakNext(id);
+  };
+  next.onerror = () => {
+    if (id !== playbackId || utterance !== next) return;
+    stopNarration("Voice playback could not continue. Try Listen again, or read the transcript below.");
+  };
+  try { synth.speak(next); }
+  catch (e) { stopNarration("Voice playback is unavailable. You can read the transcript below."); }
+}
+
+function toggleNarration(key) {
+  if (!supported) return;
+  if (activeKey === key) {
+    try {
+      if (phase === "paused") {
+        phase = "playing";
+        updatePlayer(key, "Playing overview.");
+        synth.resume();
+        if (!utterance) speakNext(playbackId);
+      } else {
+        synth.pause();
+        phase = "paused";
+        updatePlayer(key, "Overview paused.");
+      }
+    } catch (e) { stopNarration("Voice playback could not continue. Try Listen again, or read the transcript below."); }
+    return;
+  }
+  stopNarration();
+  activeKey = key; phase = "starting"; chunks = splitNarration(NARRATIONS[key]);
+  updatePlayer(key, "Starting overview…");
+  try {
+    synth.cancel();
+    synth.resume(); // Clear any paused state left by the previous overview.
+    const english = synth.getVoices().filter(v => /^en\b/i.test(v.lang));
+    voice = english.find(v => v.default) || english.find(v => v.localService) || english[0] || null;
+    speakNext(playbackId);
+  } catch (e) { stopNarration("Voice playback is unavailable. You can read the transcript below."); }
+}
+
+Object.entries(NARRATIONS).forEach(([key, text]) => {
+  const page = document.getElementById("p-" + key);
+  const box = document.createElement("div");
+  box.className = "narration";
+  box.dataset.narration = key;
+  box.setAttribute("role", "region");
+  box.setAttribute("aria-labelledby", "narration-title-" + key);
+  box.innerHTML = `<div class="narration-bar">
+    <h3 id="narration-title-${key}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4zM15 8a6 6 0 0 1 0 8M18 5a10 10 0 0 1 0 14"/></svg>Audio overview</h3>
+    <div class="narration-controls"><button type="button" class="btn narration-play" aria-controls="narration-text-${key}">Listen to overview</button><button type="button" class="btn narration-stop" disabled>Stop</button></div>
+    </div>
+    <p class="narration-status" role="status" aria-live="polite" aria-atomic="true"></p>
+    <details><summary>Read transcript</summary><p id="narration-text-${key}"></p></details>`;
+  box.querySelector("details p").textContent = text;
+  const player = { title: page.dataset.title, play: box.querySelector(".narration-play"), stop: box.querySelector(".narration-stop"), status: box.querySelector(".narration-status") };
+  player.play.disabled = !supported;
+  player.play.onclick = () => toggleNarration(key);
+  player.stop.setAttribute("aria-label", "Stop overview: " + player.title);
+  player.stop.onclick = () => stopNarration();
+  players.set(key, player);
+  updatePlayer(key, supported ? "Ready to listen." : "Voice playback is unavailable in this browser. You can read the transcript below.");
+  const heading = page.querySelector(".page-head");
+  if (heading) heading.after(box); else page.prepend(box);
+});
+
+window.addEventListener("nf:pagechange", event => {
+  if (activeKey && activeKey !== event.detail.key) stopNarration();
+});
+window.addEventListener("pagehide", () => stopNarration());
+})();
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>/*__DATA__*/</script>
@@ -587,6 +744,7 @@ const PAGES = [["overview", "p-overview", "Dashboard"], ["study", "p-study", "St
   ["slides", "p-slides", "Landslide Analysis"], ["rain", "p-rain", "Rainfall 2025"], ["about", "p-about", "Data Sources"]];
 const inited = {};
 function show(key) {
+  window.dispatchEvent(new CustomEvent("nf:pagechange", { detail: { key } }));
   PAGES.forEach(([k, id]) => { $("#" + id).hidden = k !== key; });
   document.querySelectorAll("#nav button").forEach(b => { if (b.dataset.k === key) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
   if (!inited[key]) { inited[key] = true; (INIT[key] || (() => {}))(); }
